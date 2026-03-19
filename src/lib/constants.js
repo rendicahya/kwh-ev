@@ -8,4 +8,5 @@ export const DEFAULTS = {
   targetBattery: 80,
   availableHours: 1,
   availableMinutes: 0,
+  budget: 50000,
 };

@@ -4,6 +4,7 @@
   import SharedInputs from './components/SharedInputs.svelte';
   import ModeTarget from './components/ModeTarget.svelte';
   import ModeTime from './components/ModeTime.svelte';
+  import ModeBudget from './components/ModeBudget.svelte';
 
   let activeTab = 'target';
 
@@ -14,11 +15,20 @@
   let targetBattery    = DEFAULTS.targetBattery;
   let availableHours   = DEFAULTS.availableHours;
   let availableMinutes = DEFAULTS.availableMinutes;
+  let budget           = DEFAULTS.budget;
 
-  $: shared   = validateShared({ batteryCapacity, chargerPower, currentBattery, tariffPerKwh });
+  $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery, tariffPerKwh });
   $: sharedValid = Object.values(shared).every(e => e === '');
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
-  $: timeErrors = validateTime({ availableHours, availableMinutes });
+  $: timeErrors  = validateTime({ availableHours, availableMinutes });
+
+  const tabs = [
+    { id: 'target', label: '🎯 Target Baterai' },
+    { id: 'time',   label: '⏱️ Waktu Tersedia' },
+    { id: 'budget', label: '💰 Anggaran' },
+  ];
+
+  $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 font-sans">
@@ -49,25 +59,21 @@
 
     <!-- Tab Switcher -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-2 flex gap-2">
-      <button
-        class="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200
-          {activeTab === 'target' ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
-        on:click={() => activeTab = 'target'}>
-        🎯 Target Baterai
-      </button>
-      <button
-        class="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-200
-          {activeTab === 'time' ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
-        on:click={() => activeTab = 'time'}>
-        ⏱️ Waktu Tersedia
-      </button>
+      {#each tabs as tab}
+        <button
+          class="flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200
+            {activeTab === tab.id ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
+          on:click={() => activeTab = tab.id}>
+          {tab.label}
+        </button>
+      {/each}
     </div>
 
     <!-- Card Mode -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
       <div class="bg-slate-800 px-6 py-4">
         <h2 class="text-white font-semibold text-base tracking-wide">
-          {activeTab === 'target' ? '🎯 Mode Target Baterai' : '⏱️ Mode Waktu Tersedia'}
+          {modeTitle}
         </h2>
       </div>
       <div class="p-6 space-y-5">
@@ -76,13 +82,19 @@
             {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
             bind:targetBattery {targetBatteryError} {sharedValid}
           />
-        {:else}
+        {:else if activeTab === 'time'}
           <ModeTime
             {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
             bind:availableHours bind:availableMinutes
             availableHoursError={timeErrors.availableHoursError}
             availableMinutesError={timeErrors.availableMinutesError}
             timeError={timeErrors.timeError}
+            {sharedValid}
+          />
+        {:else if activeTab === 'budget'}
+          <ModeBudget
+            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
+            bind:budget
             {sharedValid}
           />
         {/if}

@@ -23,3 +23,18 @@ export function calcTime({ batteryCapacity, currentBattery, chargerPower, availa
   const totalCost = energyCost + PBJT_TL;
   return { energyFromTime, batteryGained, finalBattery, energyCost, totalCost };
 }
+
+export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, PBJT_TL }) {
+  const budgetAfterPBJT = budget - PBJT_TL;
+  if (budgetAfterPBJT <= 0) return null;
+  const rawEnergy = budgetAfterPBJT / tariffPerKwh;
+  const maxEnergy = batteryCapacity * (1 - currentBattery / 100);
+  const energyFromBudget = Math.floor(Math.min(rawEnergy, maxEnergy));
+  const chargingTime = chargerPower > 0 ? energyFromBudget / chargerPower : 0;
+  const chargingHours = Math.floor(chargingTime);
+  const chargingMinutes = Math.round((chargingTime - chargingHours) * 60);
+  const batteryGained = batteryCapacity > 0 ? (energyFromBudget / batteryCapacity) * 100 : 0;
+  const finalBattery = Math.min(100, currentBattery + batteryGained);
+  const actualCost = energyFromBudget * tariffPerKwh + PBJT_TL;
+  return { energyFromBudget, chargingHours, chargingMinutes, batteryGained, finalBattery, actualCost };
+}
