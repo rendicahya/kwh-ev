@@ -35,6 +35,8 @@
     </div>
   </div>
 
+  <slot name="extra" />
+
   <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
     <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rincian Biaya</p>
     <div class="flex justify-between items-center">
