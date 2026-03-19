@@ -12,7 +12,7 @@
 </script>
 
 <div class="space-y-3 pt-2 border-t border-slate-100">
-  <div class="grid grid-cols-2 gap-3">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-4">
       <div class="bg-emerald-100 text-emerald-600 rounded-lg p-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
