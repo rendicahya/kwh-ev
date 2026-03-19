@@ -16,12 +16,19 @@ export function calcTarget({ batteryCapacity, currentBattery, targetBattery, cha
 
 export function calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, PBJT_TL }) {
   const availableTimeHours = availableHours + availableMinutes / 60;
-  const energyFromTime = Math.min(chargerPower * availableTimeHours, batteryCapacity * (1 - currentBattery / 100));
+  const maxEnergy = batteryCapacity * (1 - currentBattery / 100);
+  const energyFromTime = Math.min(chargerPower * availableTimeHours, maxEnergy);
   const batteryGained = batteryCapacity > 0 ? (energyFromTime / batteryCapacity) * 100 : 0;
   const finalBattery = Math.min(100, currentBattery + batteryGained);
+
+  // Waktu aktual: mungkin lebih singkat jika baterai sudah penuh sebelum waktu habis
+  const actualTimeHours = chargerPower > 0 ? energyFromTime / chargerPower : 0;
+  const actualHours = Math.floor(actualTimeHours);
+  const actualMinutes = Math.round((actualTimeHours - actualHours) * 60);
+
   const energyCost = energyFromTime * tariffPerKwh;
   const totalCost = energyCost + PBJT_TL;
-  return { energyFromTime, batteryGained, finalBattery, energyCost, totalCost };
+  return { energyFromTime, batteryGained, finalBattery, actualHours, actualMinutes, energyCost, totalCost };
 }
 
 export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, PBJT_TL }) {
