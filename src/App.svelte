@@ -5,6 +5,7 @@
   import ModeTarget from './components/ModeTarget.svelte';
   import ModeTime from './components/ModeTime.svelte';
   import ModeBudget from './components/ModeBudget.svelte';
+  import Tooltip from './components/Tooltip.svelte';
 
   let activeTab = 'target';
 
@@ -23,9 +24,21 @@
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
 
   const tabs = [
-    { id: 'target', label: '🎯 Target Baterai' },
-    { id: 'time',   label: '⏱️ Waktu Tersedia' },
-    { id: 'budget', label: '💰 Anggaran' },
+    {
+      id: 'target',
+      label: '🎯 Target Baterai',
+      tooltip: 'Tentukan target % baterai yang ingin dicapai. App akan menghitung energi, waktu, dan biaya yang dibutuhkan.',
+    },
+    {
+      id: 'time',
+      label: '⏱️ Waktu Tersedia',
+      tooltip: 'Masukkan berapa lama waktu yang tersedia untuk mengisi daya. App akan menghitung seberapa penuh baterai dan biayanya.',
+    },
+    {
+      id: 'budget',
+      label: '💰 Anggaran',
+      tooltip: 'Masukkan anggaran biaya yang dimiliki. App akan menghitung energi dan % baterai yang bisa didapat.',
+    },
   ];
 
   $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
@@ -57,15 +70,18 @@
       tariffError={shared.tariffError}
     />
 
-    <!-- Tab Switcher -->
+  <!-- Tab Switcher -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-2 flex gap-2">
       {#each tabs as tab}
-        <button
-          class="flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200
-            {activeTab === tab.id ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
-          on:click={() => activeTab = tab.id}>
-          {tab.label}
-        </button>
+        <div class="flex-1 flex flex-col items-center gap-1">
+          <button
+            class="w-full py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200
+              {activeTab === tab.id ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
+            on:click={() => activeTab = tab.id}>
+            {tab.label}
+          </button>
+          <Tooltip text={tab.tooltip} />
+        </div>
       {/each}
     </div>
 
