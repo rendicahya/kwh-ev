@@ -42,3 +42,17 @@ export const EV_PRESETS = [
   { label: 'Wuling BinguoEV', capacity: 31.9 },
   { label: 'Wuling Cloud EV', capacity: 50.6 },
 ];
+
+export const CHARGER_PRESETS = [
+  { label: 'Portable Charger — 8 A', power: 1.76 },
+  { label: 'Portable Charger — 13 A', power: 2.86 },
+  { label: 'Home Charging AC — 7.7 kW', power: 7.7 },
+  { label: 'Home Charging AC — 11 kW', power: 11 },
+  { label: 'Home Charging AC — 22 kW', power: 22 },
+  { label: 'Fast Charging DC — 25 kW', power: 25 },
+  { label: 'Fast Charging DC — 50 kW', power: 50 },
+  { label: 'Fast Charging DC — 100 kW', power: 100 },
+  { label: 'Ultra Fast Charging DC — 150 kW', power: 150 },
+  { label: 'Ultra Fast Charging DC — 200 kW', power: 200 },
+  { label: 'Ultra Fast Charging DC — 350 kW', power: 350 },
+];
