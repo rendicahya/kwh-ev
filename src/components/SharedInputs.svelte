@@ -50,6 +50,53 @@
   </div>
   <div class="p-6 space-y-5">
 
+    <!-- EV Preset -->
+    <div class="flex flex-col gap-1">
+      <label for="evPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Model EV</label>
+      <div class="relative">
+        <select id="evPreset" value={selectedEV} on:change={onEVChange}
+          class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
+                 border border-slate-200 rounded-xl outline-none
+                 focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
+          <option value="custom" disabled={selectedEV !== 'custom'}>✏️ Custom</option>
+          {#each EV_PRESETS as preset}
+            <option value={preset.label}>{preset.label} — {preset.capacity} kWh</option>
+          {/each}
+        </select>
+        <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+      <div class="flex flex-col gap-1">
+        <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
+        <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
+          <input id="batteryCapacity" type="number" bind:value={batteryCapacity} min="0.1"
+            on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
+            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
+          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kWh</span>
+        </div>
+        {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
+        <div class="flex items-center border {currentBatteryError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
+          <input id="currentBattery" type="number" bind:value={currentBattery} min="0" max="100"
+            on:blur={() => onBlur('currentBattery', 0, 100)}
+            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
+          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">%</span>
+        </div>
+        {#if currentBatteryError}<p class="text-xs text-red-500 mt-0.5">{currentBatteryError}</p>{/if}
+      </div>
+
+    </div>
+
     <!-- Lokasi Pengisian -->
     <div class="flex flex-col gap-2">
       <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lokasi Pengisian</p>
@@ -101,56 +148,9 @@
       {/if}
     </div>
 
-    <!-- EV Preset -->
-    <div class="flex flex-col gap-1">
-      <label for="evPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pilih Model EV</label>
-      <div class="relative">
-        <select id="evPreset" value={selectedEV} on:change={onEVChange}
-          class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
-                 border border-slate-200 rounded-xl outline-none
-                 focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
-          <option value="custom" disabled={selectedEV !== 'custom'}>✏️ Custom</option>
-          {#each EV_PRESETS as preset}
-            <option value={preset.label}>{preset.label} — {preset.capacity} kWh</option>
-          {/each}
-        </select>
-        <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-      <div class="flex flex-col gap-1">
-        <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
-        <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <input id="batteryCapacity" type="number" bind:value={batteryCapacity} min="0.1"
-            on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kWh</span>
-        </div>
-        {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
-        <div class="flex items-center border {currentBatteryError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <input id="currentBattery" type="number" bind:value={currentBattery} min="0" max="100"
-            on:blur={() => onBlur('currentBattery', 0, 100)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">%</span>
-        </div>
-        {#if currentBatteryError}<p class="text-xs text-red-500 mt-0.5">{currentBatteryError}</p>{/if}
-      </div>
-
-    </div>
-
     <!-- Charger Preset -->
     <div class="flex flex-col gap-1">
-      <label for="chargerPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pilih Tipe Charger</label>
+      <label for="chargerPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tipe Charger</label>
       <div class="relative">
         <select id="chargerPreset" value={selectedCharger} on:change={onChargerChange}
           class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
