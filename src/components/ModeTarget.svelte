@@ -2,12 +2,12 @@
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import ResultCard from './ResultCard.svelte';
-  import { PBJT_TL } from '../lib/constants.js';
   import { calcTarget } from '../lib/calc.js';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
   export let sharedValid;
+  export let PBJT_TL;
 
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, PBJT_TL });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;

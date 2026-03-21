@@ -1,12 +1,30 @@
 <script>
   import { clamp } from '../lib/validation.js';
-  import { EV_PRESETS, CHARGER_PRESETS } from '../lib/constants.js';
+  import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF, PBJT_TL } from '../lib/constants.js';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError, tariffError;
+  export let location;      // 'home' | 'spklu'
+  export let homeDaya = HOME_TARIFFS[2].label;
 
   $: selectedEV = EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom';
   $: selectedCharger = CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom';
+
+  function onLocationChange(val) {
+    location = val;
+    if (val === 'spklu') {
+      tariffPerKwh = SPKLU_TARIFF;
+    } else {
+      const preset = HOME_TARIFFS.find(t => t.label === homeDaya);
+      if (preset) tariffPerKwh = preset.tariff;
+    }
+  }
+
+  function onHomeDayaChange(e) {
+    homeDaya = e.target.value;
+    const preset = HOME_TARIFFS.find(t => t.label === homeDaya);
+    if (preset) tariffPerKwh = preset.tariff;
+  }
 
   function onEVChange(e) {
     const preset = EV_PRESETS.find(p => p.label === e.target.value);
@@ -32,6 +50,57 @@
   </div>
   <div class="p-6 space-y-5">
 
+    <!-- Lokasi Pengisian -->
+    <div class="flex flex-col gap-2">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lokasi Pengisian</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button
+          class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold
+            {location === 'home'
+              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+              : 'border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300'}"
+          on:click={() => onLocationChange('home')}>
+          <span class="text-lg">🏠</span> Rumah
+        </button>
+        <button
+          class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold
+            {location === 'spklu'
+              ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+              : 'border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300'}"
+          on:click={() => onLocationChange('spklu')}>
+          <span class="text-lg">⚡</span> SPKLU
+        </button>
+      </div>
+
+      <!-- Info SPKLU -->
+      {#if location === 'spklu'}
+        <p class="text-xs text-slate-400">Tarif SPKLU: Rp2.466,78/kWh + PBJT-TL Rp6.660,31 (tetap)</p>
+      {/if}
+
+      <!-- Pilihan daya rumah -->
+      {#if location === 'home'}
+        <div class="flex flex-col gap-1">
+          <label for="homeDaya" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Listrik Rumah</label>
+          <div class="relative">
+            <select id="homeDaya" value={homeDaya} on:change={onHomeDayaChange}
+              class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
+                     border border-slate-200 rounded-xl outline-none
+                     focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
+              {#each HOME_TARIFFS as t}
+                <option value={t.label}>{t.label} — Rp{t.tariff.toLocaleString('id-ID')}/kWh</option>
+              {/each}
+            </select>
+            <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400">Tarif: Rp{HOME_TARIFFS.find(t => t.label === homeDaya)?.tariff.toLocaleString('id-ID')}/kWh · Tanpa PBJT-TL</p>
+        </div>
+      {/if}
+    </div>
+
     <!-- EV Preset -->
     <div class="flex flex-col gap-1">
       <label for="evPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pilih Model EV</label>
@@ -53,10 +122,8 @@
       </div>
     </div>
 
-    <!-- Input Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-      <!-- Kapasitas Baterai EV -->
       <div class="flex flex-col gap-1">
         <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
         <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
@@ -68,7 +135,6 @@
         {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
       </div>
 
-      <!-- Baterai Saat Ini -->
       <div class="flex flex-col gap-1">
         <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
         <div class="flex items-center border {currentBatteryError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
@@ -105,7 +171,6 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-      <!-- Daya Charger -->
       <div class="flex flex-col gap-1">
         <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Charger</label>
         <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
@@ -117,7 +182,6 @@
         {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
       </div>
 
-      <!-- Tarif per kWh -->
       <div class="flex flex-col gap-1">
         <label for="tariffPerKwh" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tarif per kWh</label>
         <div class="flex items-center border {tariffError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">

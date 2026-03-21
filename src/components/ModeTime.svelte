@@ -2,13 +2,13 @@
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import ResultCard from './ResultCard.svelte';
-  import { PBJT_TL } from '../lib/constants.js';
   import { calcTime } from '../lib/calc.js';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
   export let availableHoursError, availableMinutesError, timeError;
   export let sharedValid;
+  export let PBJT_TL;
 
   $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, PBJT_TL });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);

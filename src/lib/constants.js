@@ -1,3 +1,4 @@
+export const SPKLU_TARIFF = 2466.78;
 export const PBJT_TL = 6660.31;
 
 export const DEFAULTS = {
@@ -55,4 +56,12 @@ export const CHARGER_PRESETS = [
   { label: 'Ultra Fast Charging DC — 150 kW', power: 150 },
   { label: 'Ultra Fast Charging DC — 200 kW', power: 200 },
   { label: 'Ultra Fast Charging DC — 350 kW', power: 350 },
+];
+
+export const HOME_TARIFFS = [
+  { label: '900 VA', tariff: 1352 },
+  { label: '1.300 VA', tariff: 1444.7 },
+  { label: '2.200 VA', tariff: 1444.7 },
+  { label: '3.500–5.500 VA', tariff: 1699.53 },
+  { label: '6.600 VA ke atas', tariff: 1699.53 },
 ];

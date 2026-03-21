@@ -43,10 +43,12 @@
       <span class="text-sm text-slate-600">Biaya Energi × {formatRupiah(tariffPerKwh)}</span>
       <span class="text-sm font-semibold text-slate-700">{formatRupiah(energyCost)}</span>
     </div>
+    {#if PBJT_TL > 0}
     <div class="flex justify-between items-center">
       <span class="text-sm text-slate-600">PBJT-TL (tetap)</span>
       <span class="text-sm font-semibold text-slate-700">{formatRupiah(PBJT_TL)}</span>
     </div>
+    {/if}
     <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
       <span class="text-sm font-bold text-slate-800">Total Biaya</span>
       <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(totalCost)}</span>
