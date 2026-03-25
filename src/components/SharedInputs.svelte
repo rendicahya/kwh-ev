@@ -3,11 +3,11 @@
   import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF, PBJT_TL } from '../lib/constants.js';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
-  export let batteryCapacityError, chargerPowerError, currentBatteryError, tariffError;
+  export let batteryCapacityError, chargerPowerError, currentBatteryError;
   export let location;      // 'home' | 'spklu'
   export let homeDaya = HOME_TARIFFS[2].label;
 
-  $: selectedEV = EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom';
+  let selectedEV = EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom';
   $: selectedCharger = CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom';
 
   function onLocationChange(val) {
@@ -28,7 +28,10 @@
 
   function onEVChange(e) {
     const preset = EV_PRESETS.find(p => p.label === e.target.value);
-    if (preset) batteryCapacity = preset.capacity;
+    if (preset) {
+      selectedEV = e.target.value;
+      batteryCapacity = preset.capacity;
+    }
   }
 
   function onChargerChange(e) {
@@ -46,7 +49,7 @@
 
 <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
   <div class="bg-emerald-500 px-6 py-4">
-    <h2 class="text-white font-semibold text-base tracking-wide">🚗 Data Kendaraan & Tarif</h2>
+    <h2 class="text-white font-semibold text-base tracking-wide">🚗 Data Kendaraan & Charging</h2>
   </div>
   <div class="p-6 space-y-5">
 
@@ -77,6 +80,7 @@
         <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
         <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
           <input id="batteryCapacity" type="number" bind:value={batteryCapacity} min="0.1"
+            on:input={() => selectedEV = 'custom'}
             on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
             class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
           <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kWh</span>
@@ -97,9 +101,9 @@
 
     </div>
 
-    <!-- Lokasi Pengisian -->
+    <!-- Lokasi Charging -->
     <div class="flex flex-col gap-2">
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lokasi Pengisian</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lokasi Charging</p>
       <div class="grid grid-cols-2 gap-2">
         <button
           class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold
@@ -169,31 +173,16 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-      <div class="flex flex-col gap-1">
-        <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Charger</label>
-        <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
-            on:blur={() => onBlur('chargerPower', 0.1, 9999)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kW</span>
-        </div>
-        {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
+    <div class="flex flex-col gap-1">
+      <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Charger</label>
+      <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
+        <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
+          on:blur={() => onBlur('chargerPower', 0.1, 9999)}
+          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
+        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kW</span>
       </div>
-
-      <div class="flex flex-col gap-1">
-        <label for="tariffPerKwh" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tarif per kWh</label>
-        <div class="flex items-center border {tariffError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-r border-slate-200">Rp</span>
-          <input id="tariffPerKwh" type="number" bind:value={tariffPerKwh} min="0" step="0.01"
-            on:blur={() => onBlur('tariffPerKwh', 0, 99999)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">/kWh</span>
-        </div>
-        {#if tariffError}<p class="text-xs text-red-500 mt-0.5">{tariffError}</p>{/if}
-      </div>
-
+      {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
     </div>
+
   </div>
 </div>

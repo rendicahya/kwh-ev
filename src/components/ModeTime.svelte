@@ -24,7 +24,7 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <label for="availableHours" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Tersedia</label>
+  <label for="availableHours" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Pengisian</label>
   <div class="flex gap-3">
     <div class="flex-1 flex flex-col gap-1">
       <div class="flex items-center border {availableHoursError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">

@@ -1,9 +1,8 @@
-export function validateShared({ batteryCapacity, chargerPower, currentBattery, tariffPerKwh }) {
+export function validateShared({ batteryCapacity, chargerPower, currentBattery }) {
   return {
     batteryCapacityError: batteryCapacity <= 0 ? 'Kapasitas harus lebih dari 0 kWh.' : '',
     chargerPowerError: chargerPower <= 0 ? 'Daya charger harus lebih dari 0 kW.' : '',
     currentBatteryError: currentBattery < 0 || currentBattery > 100 ? 'Baterai saat ini harus antara 0–100%.' : '',
-    tariffError: tariffPerKwh < 0 ? 'Tarif tidak boleh negatif.' : '',
   };
 }
 

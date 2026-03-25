@@ -20,7 +20,7 @@
   let budget           = DEFAULTS.budget;
   let location = 'spklu';   // 'home' | 'spklu'
 
-  $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery, tariffPerKwh });
+  $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
   $: sharedValid = Object.values(shared).every(e => e === '');
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
@@ -34,7 +34,7 @@
     },
     {
       id: 'time',
-      label: '⏱️ Waktu Tersedia',
+      label: '⏱️ Waktu Pengisian',
       tooltip: 'Masukkan berapa lama waktu yang tersedia untuk mengisi daya. App akan menghitung seberapa penuh baterai dan biayanya.',
     },
     {
@@ -71,7 +71,6 @@
       batteryCapacityError={shared.batteryCapacityError}
       chargerPowerError={shared.chargerPowerError}
       currentBatteryError={shared.currentBatteryError}
-      tariffError={shared.tariffError}
     />
 
   <!-- Tab Switcher -->
