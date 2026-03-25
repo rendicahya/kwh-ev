@@ -134,9 +134,5 @@
       </div>
     </div>
 
-    <p class="text-center text-xs text-slate-400 pb-4">
-      Tarif dasar PLN · PBJT-TL Rp6.660,31 (tetap) · Data bersifat estimasi
-    </p>
-
   </main>
 </div>
