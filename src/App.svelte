@@ -7,24 +7,35 @@
   import ModeBudget from './components/ModeBudget.svelte';
   import Tooltip from './components/Tooltip.svelte';
   import { SPKLU_TARIFF, PBJT_TL, HOME_TARIFFS } from './lib/constants.js';
+  import { persisted, persist } from './lib/persist.js';
 
-  let activeTab = 'target';
-
-  let batteryCapacity  = DEFAULTS.batteryCapacity;
-  let currentBattery   = DEFAULTS.currentBattery;
-  let tariffPerKwh     = DEFAULTS.tariffPerKwh;
-  let chargerPower     = DEFAULTS.chargerPower;
-  let targetBattery    = DEFAULTS.targetBattery;
-  let availableHours   = DEFAULTS.availableHours;
-  let availableMinutes = DEFAULTS.availableMinutes;
-  let budget           = DEFAULTS.budget;
-  let location = 'spklu';   // 'home' | 'spklu'
+  let batteryCapacity  = persisted('batteryCapacity', DEFAULTS.batteryCapacity);
+  let currentBattery   = persisted('currentBattery', DEFAULTS.currentBattery);
+  let tariffPerKwh     = persisted('tariffPerKwh', DEFAULTS.tariffPerKwh);
+  let chargerPower     = persisted('chargerPower', DEFAULTS.chargerPower);
+  let targetBattery    = persisted('targetBattery', DEFAULTS.targetBattery);
+  let availableHours   = persisted('availableHours', DEFAULTS.availableHours);
+  let availableMinutes = persisted('availableMinutes', DEFAULTS.availableMinutes);
+  let budget           = persisted('budget', DEFAULTS.budget);
+  let location         = persisted('location', 'spklu');
+  let activeTab        = persisted('activeTab', 'target');
 
   $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
   $: sharedValid = Object.values(shared).every(e => e === '');
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
   $: activePBJT = location === 'spklu' ? PBJT_TL : 0;
+
+  $: persist('batteryCapacity', batteryCapacity);
+  $: persist('currentBattery', currentBattery);
+  $: persist('tariffPerKwh', tariffPerKwh);
+  $: persist('chargerPower', chargerPower);
+  $: persist('targetBattery', targetBattery);
+  $: persist('availableHours', availableHours);
+  $: persist('availableMinutes', availableMinutes);
+  $: persist('budget', budget);
+  $: persist('location', location);
+  $: persist('activeTab', activeTab);
 
   const tabs = [
     {

@@ -1,14 +1,19 @@
 <script>
   import { clamp } from '../lib/validation.js';
   import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF, PBJT_TL } from '../lib/constants.js';
+  import { persisted, persist } from '../lib/persist.js';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
   export let location;      // 'home' | 'spklu'
-  export let homeDaya = HOME_TARIFFS[2].label;
 
-  let selectedEV = EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom';
-  $: selectedCharger = CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom';
+  let selectedEV      = persisted('selectedEV', EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom');
+  let selectedCharger = persisted('selectedCharger', CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom');
+  export let homeDaya = persisted('homeDaya', HOME_TARIFFS[2].label);
+
+  $: persist('selectedEV', selectedEV);
+  $: persist('selectedCharger', selectedCharger);
+  $: persist('homeDaya', homeDaya);
 
   function onLocationChange(val) {
     location = val;
