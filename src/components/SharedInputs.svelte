@@ -1,11 +1,12 @@
 <script>
   import { clamp } from '../lib/validation.js';
-  import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF, PBJT_TL } from '../lib/constants.js';
+  import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF } from '../lib/constants.js';
   import { persisted, persist } from '../lib/persist.js';
+  import { onMount } from 'svelte';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
-  export let location;      // 'home' | 'spklu'
+  export let location;
 
   let selectedEV      = persisted('selectedEV', EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom');
   let selectedCharger = persisted('selectedCharger', CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom');
@@ -41,7 +42,10 @@
 
   function onChargerChange(e) {
     const preset = CHARGER_PRESETS.find(p => p.label === e.target.value);
-    if (preset) chargerPower = preset.power;
+    if (preset) {
+      selectedCharger = e.target.value;
+      chargerPower = preset.power;
+    }
   }
 
   function onBlur(field, min, max) {
@@ -130,7 +134,7 @@
 
       <!-- Info SPKLU -->
       {#if location === 'spklu'}
-        <p class="text-xs text-slate-400">Tarif SPKLU: Rp2.466,78/kWh + PBJT-TL Rp6.660,31 (tetap)</p>
+        <p class="text-xs text-slate-400">Tarif SPKLU: Rp2.466,78/kWh + PBJT-TL 10%</p>
       {/if}
 
       <!-- Pilihan daya rumah -->
@@ -182,8 +186,12 @@
       <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Charger</label>
       <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
         <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
-          on:blur={() => onBlur('chargerPower', 0.1, 9999)}
-          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
+  on:input={() => {
+    const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
+    selectedCharger = preset ? preset.label : 'custom';
+  }}
+  on:blur={() => onBlur('chargerPower', 0.1, 9999)}
+  class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
         <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kW</span>
       </div>
       {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}

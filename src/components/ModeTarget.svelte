@@ -7,9 +7,9 @@
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
   export let sharedValid;
-  export let PBJT_TL;
+  export let pbjt_rate;
 
-  $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, PBJT_TL });
+  $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
 
   $: timeLabel = (() => {
@@ -42,7 +42,7 @@
     energyCost={result.energyCost}
     totalCost={result.totalCost}
     {tariffPerKwh}
-    {PBJT_TL}
+    pbjt={result.pbjt}
   >
     <svelte:fragment slot="second-icon">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

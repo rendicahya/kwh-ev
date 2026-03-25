@@ -24,8 +24,7 @@ export function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
 }
 
-export function validateBudget({ budget, PBJT_TL }) {
+export function validateBudget({ budget }) {
   if (budget <= 0) return 'Biaya harus lebih dari Rp0.';
-  if (budget <= PBJT_TL) return `Biaya minimal harus lebih dari ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(PBJT_TL)} (PBJT-TL).`;
   return '';
 }

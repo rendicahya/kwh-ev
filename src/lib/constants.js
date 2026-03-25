@@ -1,5 +1,5 @@
 export const SPKLU_TARIFF = 2466.78;
-export const PBJT_TL = 6660.31;
+export const PBJT_TL_RATE = 0.10;
 
 export const DEFAULTS = {
   batteryCapacity: 60,
@@ -60,15 +60,15 @@ export const EV_PRESETS = [
 export const CHARGER_PRESETS = [
   { label: 'Portable Charger — 8 A', power: 1.76 },
   { label: 'Portable Charger — 13 A', power: 2.86 },
-  { label: 'Home Charging AC — 7.7 kW', power: 7.7 },
-  { label: 'Home Charging AC — 11 kW', power: 11 },
-  { label: 'Home Charging AC — 22 kW', power: 22 },
-  { label: 'Fast Charging DC — 25 kW', power: 25 },
-  { label: 'Fast Charging DC — 50 kW', power: 50 },
-  { label: 'Fast Charging DC — 100 kW', power: 100 },
-  { label: 'Ultra Fast Charging DC — 150 kW', power: 150 },
-  { label: 'Ultra Fast Charging DC — 200 kW', power: 200 },
-  { label: 'Ultra Fast Charging DC — 350 kW', power: 350 },
+  { label: 'AC Home Charging — 7.7 kW', power: 7.7 },
+  { label: 'AC Home Charging — 11 kW', power: 11 },
+  { label: 'AC Home Charging — 22 kW', power: 22 },
+  { label: 'DC Fast Charging — 25 kW', power: 25 },
+  { label: 'DC Fast Charging — 50 kW', power: 50 },
+  { label: 'DC Fast Charging — 100 kW', power: 100 },
+  { label: 'DC Ultra Fast Charging — 150 kW', power: 150 },
+  { label: 'DC Ultra Fast Charging — 200 kW', power: 200 },
+  { label: 'DC Ultra Fast Charging — 350 kW', power: 350 },
 ];
 
 export const HOME_TARIFFS = [

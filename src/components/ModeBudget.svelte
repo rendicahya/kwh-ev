@@ -8,10 +8,10 @@
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let budget;
   export let sharedValid;
-  export let PBJT_TL;
+  export let pbjt_rate;
 
-  $: budgetError = validateBudget({ budget, PBJT_TL });
-  $: result = !budgetError ? calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, PBJT_TL }) : null;
+  $: budgetError = validateBudget({ budget });
+  $: result = !budgetError ? calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate }) : null;
   $: showResult = sharedValid && !budgetError && result !== null && result.energyFromBudget > 0;
 
   $: timeLabel = result
@@ -30,8 +30,8 @@
   </div>
   {#if budgetError}
     <p class="text-xs text-red-500 mt-0.5">{budgetError}</p>
-  {:else}
-    <p class="text-xs text-slate-400 mt-0.5">Sudah termasuk PBJT-TL {formatRupiah(PBJT_TL)}</p>
+  {:else if pbjt_rate > 0}
+    <p class="text-xs text-slate-400 mt-0.5">Sudah termasuk PBJT-TL 10%</p>
   {/if}
 </div>
 
@@ -53,10 +53,10 @@
     secondLabel="Waktu Pengisian"
     secondValue={timeLabel}
     secondUnit=""
-    energyCost={result.actualCost - PBJT_TL}
+    energyCost={result.energyCost}
     totalCost={result.actualCost}
     {tariffPerKwh}
-    {PBJT_TL}
+    pbjt={result.pbjt}
   >
     <svelte:fragment slot="second-icon">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

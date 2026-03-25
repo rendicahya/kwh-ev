@@ -8,9 +8,9 @@
   export let availableHours, availableMinutes;
   export let availableHoursError, availableMinutesError, timeError;
   export let sharedValid;
-  export let PBJT_TL;
+  export let pbjt_rate;
 
-  $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, PBJT_TL });
+  $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);
 
   $: timeLabel = result
@@ -60,7 +60,7 @@
     energyCost={result.energyCost}
     totalCost={result.totalCost}
     {tariffPerKwh}
-    {PBJT_TL}
+    pbjt={result.pbjt}
   >
     <svelte:fragment slot="second-icon">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

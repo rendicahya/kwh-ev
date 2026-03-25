@@ -6,7 +6,7 @@
   import ModeTime from './components/ModeTime.svelte';
   import ModeBudget from './components/ModeBudget.svelte';
   import Tooltip from './components/Tooltip.svelte';
-  import { SPKLU_TARIFF, PBJT_TL, HOME_TARIFFS } from './lib/constants.js';
+  import { SPKLU_TARIFF, PBJT_TL_RATE, HOME_TARIFFS } from './lib/constants.js';
   import { persisted, persist } from './lib/persist.js';
 
   let batteryCapacity  = persisted('batteryCapacity', DEFAULTS.batteryCapacity);
@@ -24,7 +24,7 @@
   $: sharedValid = Object.values(shared).every(e => e === '');
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
-  $: activePBJT = location === 'spklu' ? PBJT_TL : 0;
+  $: activePBJTRate = location === 'spklu' ? PBJT_TL_RATE : 0;
 
   $: persist('batteryCapacity', batteryCapacity);
   $: persist('currentBattery', currentBattery);
@@ -111,7 +111,7 @@
           <ModeTarget
             {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
             bind:targetBattery {targetBatteryError} {sharedValid}
-            PBJT_TL={activePBJT}
+            pbjt_rate={activePBJTRate}
           />
         {:else if activeTab === 'time'}
           <ModeTime
@@ -121,14 +121,14 @@
             availableMinutesError={timeErrors.availableMinutesError}
             timeError={timeErrors.timeError}
             {sharedValid}
-            PBJT_TL={activePBJT}
+            pbjt_rate={activePBJTRate}
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
             {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
             bind:budget
             {sharedValid}
-            PBJT_TL={activePBJT}
+            pbjt_rate={activePBJTRate}
           />
         {/if}
       </div>

@@ -8,7 +8,7 @@
   export let energyCost;
   export let totalCost;
   export let tariffPerKwh;
-  export let PBJT_TL;
+  export let pbjt;
 </script>
 
 <div class="space-y-3 pt-2 border-t border-slate-100">
@@ -43,10 +43,10 @@
       <span class="text-sm text-slate-600">Biaya Energi × {formatRupiah(tariffPerKwh)}</span>
       <span class="text-sm font-semibold text-slate-700">{formatRupiah(energyCost)}</span>
     </div>
-    {#if PBJT_TL > 0}
+    {#if pbjt > 0}
     <div class="flex justify-between items-center">
       <span class="text-sm text-slate-600">PBJT-TL (tetap)</span>
-      <span class="text-sm font-semibold text-slate-700">{formatRupiah(PBJT_TL)}</span>
+      <span class="text-sm font-semibold text-slate-700">{formatRupiah(pbjt)}</span>
     </div>
     {/if}
     <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
