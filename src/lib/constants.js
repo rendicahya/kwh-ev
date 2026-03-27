@@ -58,17 +58,17 @@ export const EV_PRESETS = [
 ];
 
 export const CHARGER_PRESETS = [
-  { label: 'Portable Charger — 8 A', power: 1.76 },
-  { label: 'Portable Charger — 13 A', power: 2.86 },
-  { label: 'AC Home Charging — 7.7 kW', power: 7.7 },
-  { label: 'AC Home Charging — 11 kW', power: 11 },
-  { label: 'AC Home Charging — 22 kW', power: 22 },
-  { label: 'DC Fast Charging — 25 kW', power: 25 },
-  { label: 'DC Fast Charging — 50 kW', power: 50 },
-  { label: 'DC Fast Charging — 100 kW', power: 100 },
-  { label: 'DC Ultra Fast Charging — 150 kW', power: 150 },
-  { label: 'DC Ultra Fast Charging — 200 kW', power: 200 },
-  { label: 'DC Ultra Fast Charging — 350 kW', power: 350 },
+  { label: 'Portable charger — 8 A', power: 1.76 },
+  { label: 'Portable charger — 13 A', power: 2.86 },
+  { label: 'AC charging — 7.7 kW', power: 7.7 },
+  { label: 'AC charging — 11 kW', power: 11 },
+  { label: 'AC charging — 22 kW', power: 22 },
+  { label: 'DC fast charging — 25 kW', power: 25 },
+  { label: 'DC fast charging — 50 kW', power: 50 },
+  { label: 'DC fast charging — 100 kW', power: 100 },
+  { label: 'DC ultra fast charging — 150 kW', power: 150 },
+  { label: 'DC ultra fast charging — 200 kW', power: 200 },
+  { label: 'DC ultra fast charging — 350 kW', power: 350 },
 ];
 
 export const HOME_TARIFFS = [
@@ -76,5 +76,5 @@ export const HOME_TARIFFS = [
   { label: '1.300 VA', tariff: 1444.7 },
   { label: '2.200 VA', tariff: 1444.7 },
   { label: '3.500–5.500 VA', tariff: 1699.53 },
-  { label: '6.600 VA ke atas', tariff: 1699.53 },
+  { label: '>6.600 VA', tariff: 1699.53 },
 ];
