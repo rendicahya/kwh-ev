@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="flex flex-col gap-5">
 
       <div class="flex flex-col gap-1">
         <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
@@ -97,13 +97,18 @@
         {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
-        <div class="flex items-center border {currentBatteryError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <input id="currentBattery" type="number" bind:value={currentBattery} min="0" max="100"
-            on:blur={() => onBlur('currentBattery', 0, 100)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">%</span>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
+          <span class="text-sm font-bold text-emerald-600">{currentBattery}%</span>
+        </div>
+        <input id="currentBattery" type="range" bind:value={currentBattery} min="0" max="100" step="1"
+          class="w-full h-2 rounded-full appearance-none cursor-pointer
+                 bg-slate-200 accent-emerald-500" />
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>0%</span>
+          <span>50%</span>
+          <span>100%</span>
         </div>
         {#if currentBatteryError}<p class="text-xs text-red-500 mt-0.5">{currentBatteryError}</p>{/if}
       </div>

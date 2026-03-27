@@ -19,13 +19,19 @@
   })();
 </script>
 
-<div class="flex flex-col gap-1">
-  <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Target</label>
-  <div class="flex items-center border {targetBatteryError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-    <input id="targetBattery" type="number" bind:value={targetBattery} min="0" max="100"
-      on:blur={() => targetBattery = clamp(targetBattery, 0, 100)}
-      class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-    <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">%</span>
+<div class="flex flex-col gap-2">
+  <div class="flex items-center justify-between">
+    <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Target</label>
+    <span class="text-sm font-bold text-emerald-600">{targetBattery}%</span>
+  </div>
+  <input id="targetBattery" type="range" bind:value={targetBattery} min="0" max="100" step="1"
+    on:blur={() => targetBattery = clamp(targetBattery, 0, 100)}
+    class="w-full h-2 rounded-full appearance-none cursor-pointer
+           bg-slate-200 accent-emerald-500" />
+  <div class="flex justify-between text-xs text-slate-400">
+    <span>0%</span>
+    <span>50%</span>
+    <span>100%</span>
   </div>
   {#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
 </div>
