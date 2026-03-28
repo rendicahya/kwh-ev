@@ -19,6 +19,7 @@
   let budget           = persisted('budget', DEFAULTS.budget);
   let location         = persisted('location', 'spklu');
   let activeTab        = persisted('activeTab', 'target');
+  let selectedEV       = persisted('selectedEV', 'custom');
 
   $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
   $: sharedValid = Object.values(shared).every(e => e === '');
@@ -36,6 +37,7 @@
   $: persist('budget', budget);
   $: persist('location', location);
   $: persist('activeTab', activeTab);
+  $: persist('selectedEV', selectedEV);
 
   const tabs = [
     {
@@ -78,7 +80,7 @@
 
     <SharedInputs
       bind:batteryCapacity bind:currentBattery bind:tariffPerKwh bind:chargerPower
-      bind:location
+      bind:location bind:selectedEV
       batteryCapacityError={shared.batteryCapacityError}
       chargerPowerError={shared.chargerPowerError}
       currentBatteryError={shared.currentBatteryError}
@@ -112,6 +114,7 @@
             {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
             bind:targetBattery {targetBatteryError} {sharedValid}
             pbjt_rate={activePBJTRate}
+            {selectedEV}
           />
         {:else if activeTab === 'time'}
           <ModeTime

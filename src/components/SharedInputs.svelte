@@ -7,8 +7,8 @@
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
   export let location;
+  export let selectedEV;
 
-  let selectedEV      = persisted('selectedEV', EV_PRESETS.find(p => p.capacity === batteryCapacity)?.label ?? 'custom');
   let selectedCharger = persisted('selectedCharger', CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom');
   export let homeDaya = persisted('homeDaya', HOME_TARIFFS[2].label);
 
