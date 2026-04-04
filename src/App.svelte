@@ -118,7 +118,7 @@
           />
         {:else if activeTab === 'time'}
           <ModeTime
-            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
+            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV}
             bind:availableHours bind:availableMinutes
             availableHoursError={timeErrors.availableHoursError}
             availableMinutesError={timeErrors.availableMinutesError}
@@ -128,7 +128,7 @@
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
-            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh}
+            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV}
             bind:budget
             {sharedValid}
             pbjt_rate={activePBJTRate}

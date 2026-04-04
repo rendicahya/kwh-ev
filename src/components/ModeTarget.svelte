@@ -14,8 +14,7 @@
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
   $: evPreset = selectedEV !== 'custom' ? EV_PRESETS.find(p => p.label === selectedEV) : null;
-  $: estimatedRange = evPreset ? calcRange({ targetBattery, currentBattery: 0, fullRange: evPreset.range }) : null;
-  $: rangeGained = evPreset ? Math.round(evPreset.range * (result.energyNeeded / evPreset.capacity)) : null;
+  $: rangeGained = evPreset ? calcRange(evPreset.range, targetBattery) : null;
 
   $: timeLabel = (() => {
     const h = result.chargingHours > 0 ? `${result.chargingHours} jam` : '';
@@ -72,7 +71,7 @@
             <p class="text-xl font-bold text-slate-800">
               ~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span>
             </p>
-            <p class="text-xs text-slate-400 mt-0.5">dari {targetBattery}% baterai ≈ ~{estimatedRange} km total</p>
+            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {targetBattery}% baterai · standar {evPreset.standard}</p>
           </div>
         </div>
       {/if}

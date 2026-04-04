@@ -47,8 +47,6 @@ export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity
   return { energyFromBudget, chargingHours, chargingMinutes, batteryGained, finalBattery, energyCost, pbjt, actualCost };
 }
 
-export function calcRange({ targetBattery, currentBattery, fullRange }) {
-  const ratio = targetBattery / 100;
-  const estimatedRange = Math.round(fullRange * ratio);
-  return estimatedRange;
+export function calcRange(fullRange, batteryPercent) {
+  return Math.round(fullRange * batteryPercent / 100);
 }

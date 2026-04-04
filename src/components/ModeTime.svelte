@@ -3,15 +3,20 @@
   import ProgressBar from './ProgressBar.svelte';
   import ResultCard from './ResultCard.svelte';
   import { calcTime } from '../lib/calc.js';
+  import { calcRange } from '../lib/calc.js';
+  import { EV_PRESETS } from '../lib/constants.js';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
   export let availableHoursError, availableMinutesError, timeError;
   export let sharedValid;
   export let pbjt_rate;
+  export let selectedEV = 'custom';
 
   $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);
+  $: evPreset = selectedEV !== 'custom' ? EV_PRESETS.find(p => p.label === selectedEV) : null;
+  $: rangeGained = evPreset && result ? calcRange(evPreset.range, result.finalBattery) : null;
 
   $: timeLabel = result
     ? ((result.actualHours > 0 ? `${result.actualHours} jam` : '') +
@@ -81,6 +86,22 @@
           <p class="text-xl font-bold text-slate-800">{result.finalBattery.toFixed(1)} <span class="text-sm font-normal text-slate-500">%</span></p>
         </div>
       </div>
+
+      {#if evPreset}
+        <div class="flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-4 py-4">
+          <div class="bg-violet-100 text-violet-600 rounded-lg p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Estimasi Jarak Tempuh <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
+            <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
+            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {result.finalBattery.toFixed(1)}% baterai · standar {evPreset.standard}</p>
+          </div>
+        </div>
+      {/if}
 
       {#if chargeComplete}
       <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
