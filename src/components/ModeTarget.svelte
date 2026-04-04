@@ -72,7 +72,8 @@
       <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-4">
         <div class="bg-slate-200 text-slate-600 rounded-lg p-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 7h10a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9a2 2 0 012-2zm-4 4h2m10-4V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2"/>
           </svg>
         </div>
         <div>
