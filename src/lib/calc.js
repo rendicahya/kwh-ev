@@ -16,19 +16,28 @@ export function calcTarget({ batteryCapacity, currentBattery, targetBattery, cha
   return { energyNeeded, energyFromGrid, chargingHours, chargingMinutes, energyCost, pbjt, totalCost };
 }
 
-export function calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate }) {
+export function calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate, efficiency = 0.90 }) {
   const availableTimeHours = availableHours + availableMinutes / 60;
   const maxEnergy = batteryCapacity * (1 - currentBattery / 100);
-  const energyFromTime = Math.min(chargerPower * availableTimeHours, maxEnergy);
-  const batteryGained = batteryCapacity > 0 ? (energyFromTime / batteryCapacity) * 100 : 0;
+
+  // Energi yang masuk ke baterai = daya charger × waktu × efisiensi
+  const energyFromGrid = chargerPower * availableTimeHours;
+  const energyToBattery = Math.min(energyFromGrid * efficiency, maxEnergy);
+
+  const batteryGained = batteryCapacity > 0 ? (energyToBattery / batteryCapacity) * 100 : 0;
   const finalBattery = Math.min(100, currentBattery + batteryGained);
-  const actualTimeHours = chargerPower > 0 ? energyFromTime / chargerPower : 0;
+
+  // Waktu aktual berdasarkan energi ke baterai yang dibutuhkan
+  const actualEnergyFromGrid = Math.min(energyFromGrid, maxEnergy / efficiency);
+  const actualTimeHours = chargerPower > 0 ? actualEnergyFromGrid / chargerPower : 0;
   const actualHours = Math.floor(actualTimeHours);
   const actualMinutes = Math.round((actualTimeHours - actualHours) * 60);
-  const energyCost = energyFromTime * tariffPerKwh;
+
+  const energyCost = actualEnergyFromGrid * tariffPerKwh;
   const pbjt = energyCost * pbjt_rate;
   const totalCost = energyCost + pbjt;
-  return { energyFromTime, batteryGained, finalBattery, actualHours, actualMinutes, energyCost, pbjt, totalCost };
+
+  return { energyToBattery, energyFromGrid: actualEnergyFromGrid, batteryGained, finalBattery, actualHours, actualMinutes, energyCost, pbjt, totalCost };
 }
 
 export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate }) {

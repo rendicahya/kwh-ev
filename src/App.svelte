@@ -123,7 +123,7 @@
           />
         {:else if activeTab === 'time'}
           <ModeTime
-            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV}
+            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV} {efficiency}
             bind:availableHours bind:availableMinutes
             availableHoursError={timeErrors.availableHoursError}
             availableMinutesError={timeErrors.availableMinutesError}
