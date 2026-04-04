@@ -2,16 +2,18 @@
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import ResultCard from './ResultCard.svelte';
-  import { calcTarget, calcRange } from '../lib/calc.js';
+  import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
+  import { CHARGING_EFFICIENCY } from '../lib/constants.js';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
   export let sharedValid;
   export let pbjt_rate;
   export let selectedEV = 'custom';
+  let efficiency = CHARGING_EFFICIENCY;
 
-  $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate });
+  $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
   $: evPreset = selectedEV !== 'custom' ? EV_PRESETS.find(p => p.label === selectedEV) : null;
   $: rangeGained = evPreset ? calcRange(evPreset.range, targetBattery) : null;
@@ -23,10 +25,11 @@
   })();
 </script>
 
+<!-- Slider Baterai Target -->
 <div class="flex flex-col gap-2">
   <div class="flex items-center justify-between">
     <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Target</label>
-    <span class="text-sm font-bold text-emerald-600">{targetBattery}%</span>
+    <span class="text-sm font-bold {targetBattery > 80 ? 'text-amber-500' : 'text-emerald-600'}">{targetBattery}%</span>
   </div>
   <input id="targetBattery" type="range" bind:value={targetBattery} min="0" max="100" step="1"
     on:blur={() => targetBattery = clamp(targetBattery, 0, 100)}
@@ -37,24 +40,78 @@
     <span>50%</span>
     <span>100%</span>
   </div>
+  {#if targetBattery > 80}
+    <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+      <p class="text-xs text-amber-700">Pengisian di atas 80% memperlambat laju pengisian dan dapat mempercepat degradasi baterai jangka panjang.</p>
+    </div>
+  {/if}
   {#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
+</div>
+
+<!-- Slider Efisiensi -->
+<div class="flex flex-col gap-2">
+  <div class="flex items-center justify-between">
+    <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Efisiensi Pengisian</label>
+    <span class="text-sm font-bold text-emerald-600">{Math.round(efficiency * 100)}%</span>
+  </div>
+  <input id="efficiency" type="range" bind:value={efficiency} min="0.85" max="0.95" step="0.01"
+    class="w-full h-2 rounded-full appearance-none cursor-pointer
+           bg-slate-200 accent-emerald-500" />
+  <div class="flex justify-between text-xs text-slate-400">
+    <span>85% (konservatif)</span>
+    <span>95% (optimal)</span>
+  </div>
 </div>
 
 <ProgressBar mode="target" {currentBattery} {targetBattery} />
 
 {#if showResult}
-  <ResultCard
-    energyLabel="Energi Dibutuhkan"
-    energyValue={result.energyNeeded.toFixed(2)}
-    secondLabel="Waktu Pengisian"
-    secondValue={timeLabel}
-    secondUnit=""
-    energyCost={result.energyCost}
-    totalCost={result.totalCost}
-    {tariffPerKwh}
-    pbjt={result.pbjt}
-  >
-    <svelte:fragment slot="extra">
+  <div class="space-y-3 pt-2 border-t border-slate-100">
+
+    <!-- Baris 1: Energi dari PLN + Energi ke Baterai -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-4">
+        <div class="bg-emerald-100 text-emerald-600 rounded-lg p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Energi dari PLN</p>
+          <p class="text-xl font-bold text-slate-800">{result.energyFromGrid.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-4">
+        <div class="bg-slate-200 text-slate-600 rounded-lg p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Energi ke Baterai</p>
+          <p class="text-xl font-bold text-slate-800">{result.energyNeeded.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Baris 2: Waktu Pengisian + Estimasi Jarak (jika ada preset) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
+        <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 font-medium">Waktu Pengisian</p>
+          <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
+        </div>
+      </div>
+
       {#if evPreset}
         <div class="flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-4 py-4">
           <div class="bg-violet-100 text-violet-600 rounded-lg p-2">
@@ -64,22 +121,35 @@
             </svg>
           </div>
           <div>
-            <p class="text-xs text-slate-500 font-medium">
-              Estimasi Jarak Tempuh
-              <span class="text-slate-400 font-normal">({evPreset.standard})</span>
-            </p>
-            <p class="text-xl font-bold text-slate-800">
-              ~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span>
-            </p>
-            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {targetBattery}% baterai · standar {evPreset.standard}</p>
+            <p class="text-xs text-slate-500 font-medium">Estimasi Jarak <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
+            <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
+            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {targetBattery}% baterai</p>
           </div>
         </div>
+      {:else}
+        <!-- Placeholder kosong agar baris tetap rapi jika tidak ada preset -->
+        <div></div>
       {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="second-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-    </svelte:fragment>
-  </ResultCard>
+    </div>
+
+    <!-- Rincian Biaya -->
+    <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rincian Biaya</p>
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-slate-600">Biaya Energi ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
+        <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.energyCost)}</span>
+      </div>
+      {#if pbjt_rate > 0}
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-slate-600">PBJT-TL <em>(10% dari biaya energi)</em></span>
+        <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.pbjt)}</span>
+      </div>
+      {/if}
+      <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
+        <span class="text-sm font-bold text-slate-800">Total Biaya</span>
+        <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.totalCost)}</span>
+      </div>
+    </div>
+
+  </div>
 {/if}

@@ -1,5 +1,6 @@
 export const SPKLU_TARIFF = 2466.78;
 export const PBJT_TL_RATE = 0.10;
+export const CHARGING_EFFICIENCY = 0.90;
 
 export const DEFAULTS = {
   batteryCapacity: 60,

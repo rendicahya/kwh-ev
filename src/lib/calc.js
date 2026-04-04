@@ -4,15 +4,16 @@ export function formatRupiah(val) {
   }).format(val);
 }
 
-export function calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate }) {
+export function calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency = 0.90 }) {
   const energyNeeded = Math.max(0, ((targetBattery - currentBattery) / 100) * batteryCapacity);
-  const chargingTime = chargerPower > 0 ? energyNeeded / chargerPower : 0;
+  const energyFromGrid = energyNeeded / efficiency; // energi dari PLN lebih besar karena losses
+  const chargingTime = chargerPower > 0 ? energyFromGrid / chargerPower : 0;
   const chargingHours = Math.floor(chargingTime);
   const chargingMinutes = Math.round((chargingTime - chargingHours) * 60);
-  const energyCost = energyNeeded * tariffPerKwh;
+  const energyCost = energyFromGrid * tariffPerKwh;
   const pbjt = energyCost * pbjt_rate;
   const totalCost = energyCost + pbjt;
-  return { energyNeeded, chargingHours, chargingMinutes, energyCost, pbjt, totalCost };
+  return { energyNeeded, energyFromGrid, chargingHours, chargingMinutes, energyCost, pbjt, totalCost };
 }
 
 export function calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate }) {
