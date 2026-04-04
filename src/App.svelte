@@ -133,7 +133,7 @@
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
-            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV}
+            {batteryCapacity} {currentBattery} {chargerPower} {tariffPerKwh} {selectedEV} {efficiency}
             bind:budget
             {sharedValid}
             pbjt_rate={activePBJTRate}

@@ -40,21 +40,23 @@ export function calcTime({ batteryCapacity, currentBattery, chargerPower, availa
   return { energyToBattery, energyFromGrid: actualEnergyFromGrid, batteryGained, finalBattery, actualHours, actualMinutes, energyCost, pbjt, totalCost };
 }
 
-export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate }) {
-  // Total = energyCost + pbjt = energyCost * (1 + pbjt_rate)
-  const maxEnergy = batteryCapacity * (1 - currentBattery / 100);
-  const rawEnergy = budget / (tariffPerKwh * (1 + pbjt_rate));
-  const energyFromBudget = Math.floor(Math.min(rawEnergy, maxEnergy));
-  if (energyFromBudget <= 0) return null;
-  const chargingTime = chargerPower > 0 ? energyFromBudget / chargerPower : 0;
+export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate, efficiency = 0.90 }) {
+  const maxEnergyToBattery = batteryCapacity * (1 - currentBattery / 100);
+  // Energi ke baterai dari anggaran, setelah PBJT-TL dan efisiensi
+  const rawEnergyFromGrid = budget / (tariffPerKwh * (1 + pbjt_rate));
+  const rawEnergyToBattery = rawEnergyFromGrid * efficiency;
+  const energyToBattery = Math.floor(Math.min(rawEnergyToBattery, maxEnergyToBattery));
+  if (energyToBattery <= 0) return null;
+  const energyFromGrid = energyToBattery / efficiency;
+  const chargingTime = chargerPower > 0 ? energyFromGrid / chargerPower : 0;
   const chargingHours = Math.floor(chargingTime);
   const chargingMinutes = Math.round((chargingTime - chargingHours) * 60);
-  const batteryGained = batteryCapacity > 0 ? (energyFromBudget / batteryCapacity) * 100 : 0;
+  const batteryGained = batteryCapacity > 0 ? (energyToBattery / batteryCapacity) * 100 : 0;
   const finalBattery = Math.min(100, currentBattery + batteryGained);
-  const energyCost = energyFromBudget * tariffPerKwh;
+  const energyCost = energyFromGrid * tariffPerKwh;
   const pbjt = energyCost * pbjt_rate;
   const actualCost = energyCost + pbjt;
-  return { energyFromBudget, chargingHours, chargingMinutes, batteryGained, finalBattery, energyCost, pbjt, actualCost };
+  return { energyToBattery, energyFromGrid, chargingHours, chargingMinutes, batteryGained, finalBattery, energyCost, pbjt, actualCost };
 }
 
 export function calcRange(fullRange, batteryPercent) {
