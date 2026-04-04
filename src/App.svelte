@@ -8,6 +8,7 @@
   import Tooltip from './components/Tooltip.svelte';
   import { SPKLU_TARIFF, PBJT_TL_RATE, HOME_TARIFFS } from './lib/constants.js';
   import { persisted, persist } from './lib/persist.js';
+  import { CHARGING_EFFICIENCY } from './lib/constants.js';
 
   let batteryCapacity  = persisted('batteryCapacity', DEFAULTS.batteryCapacity);
   let currentBattery   = persisted('currentBattery', DEFAULTS.currentBattery);
@@ -20,13 +21,14 @@
   let location         = persisted('location', 'spklu');
   let activeTab        = persisted('activeTab', 'target');
   let selectedEV       = persisted('selectedEV', 'custom');
+  let efficiency       = persisted('efficiency', CHARGING_EFFICIENCY);
 
   $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
   $: sharedValid = Object.values(shared).every(e => e === '');
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
   $: activePBJTRate = location === 'spklu' ? PBJT_TL_RATE : 0;
-
+  
   $: persist('batteryCapacity', batteryCapacity);
   $: persist('currentBattery', currentBattery);
   $: persist('tariffPerKwh', tariffPerKwh);
@@ -38,7 +40,8 @@
   $: persist('location', location);
   $: persist('activeTab', activeTab);
   $: persist('selectedEV', selectedEV);
-
+  $: persist('efficiency', efficiency);
+  
   const tabs = [
     {
       id: 'target',
@@ -81,6 +84,7 @@
     <SharedInputs
       bind:batteryCapacity bind:currentBattery bind:tariffPerKwh bind:chargerPower
       bind:location bind:selectedEV
+      bind:efficiency
       batteryCapacityError={shared.batteryCapacityError}
       chargerPowerError={shared.chargerPowerError}
       currentBatteryError={shared.currentBatteryError}
@@ -115,6 +119,7 @@
             bind:targetBattery {targetBatteryError} {sharedValid}
             pbjt_rate={activePBJTRate}
             {selectedEV}
+            {efficiency}
           />
         {:else if activeTab === 'time'}
           <ModeTime

@@ -8,6 +8,7 @@
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
   export let location;
   export let selectedEV;
+  export let efficiency;
 
   let selectedCharger = persisted('selectedCharger', CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom');
   export let homeDaya = persisted('homeDaya', HOME_TARIFFS[2].label);
@@ -202,5 +203,20 @@
       {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
     </div>
 
+    
+    <!-- Efisiensi Pengisian -->
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Efisiensi Pengisian</label>
+        <span class="text-sm font-bold text-emerald-600">{Math.round(efficiency * 100)}%</span>
+      </div>
+      <input id="efficiency" type="range" bind:value={efficiency} min="0.85" max="0.95" step="0.01"
+      class="w-full h-2 rounded-full appearance-none cursor-pointer
+      bg-slate-200 accent-emerald-500" />
+      <div class="flex justify-between text-xs text-slate-400">
+        <span>85% (konservatif)</span>
+        <span>95% (optimal)</span>
+      </div>
+    </div>
   </div>
 </div>

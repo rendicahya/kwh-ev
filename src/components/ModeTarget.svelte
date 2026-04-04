@@ -4,14 +4,13 @@
   import ResultCard from './ResultCard.svelte';
   import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
-  import { CHARGING_EFFICIENCY } from '../lib/constants.js';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
   export let sharedValid;
   export let pbjt_rate;
   export let selectedEV = 'custom';
-  let efficiency = CHARGING_EFFICIENCY;
+  export let efficiency;
 
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
@@ -49,21 +48,6 @@
     </div>
   {/if}
   {#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
-</div>
-
-<!-- Slider Efisiensi -->
-<div class="flex flex-col gap-2">
-  <div class="flex items-center justify-between">
-    <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Efisiensi Pengisian</label>
-    <span class="text-sm font-bold text-emerald-600">{Math.round(efficiency * 100)}%</span>
-  </div>
-  <input id="efficiency" type="range" bind:value={efficiency} min="0.85" max="0.95" step="0.01"
-    class="w-full h-2 rounded-full appearance-none cursor-pointer
-           bg-slate-200 accent-emerald-500" />
-  <div class="flex justify-between text-xs text-slate-400">
-    <span>85% (konservatif)</span>
-    <span>95% (optimal)</span>
-  </div>
 </div>
 
 <ProgressBar mode="target" {currentBattery} {targetBattery} />
