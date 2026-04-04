@@ -45,7 +45,7 @@
     </div>
     {#if pbjt > 0}
     <div class="flex justify-between items-center">
-      <span class="text-sm text-slate-600">PBJT-TL (tetap)</span>
+      <span class="text-sm text-slate-600">PBJT-TL <em>(10% dari biaya energi)</em></span>
       <span class="text-sm font-semibold text-slate-700">{formatRupiah(pbjt)}</span>
     </div>
     {/if}
