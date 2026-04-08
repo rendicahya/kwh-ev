@@ -9,19 +9,23 @@
   import { SPKLU_TARIFF, PBJT_TL_RATE, HOME_TARIFFS } from './lib/constants.js';
   import { persisted, persist } from './lib/persist.js';
   import { CHARGING_EFFICIENCY } from './lib/constants.js';
+  import { stateToUrl, urlToState } from './lib/url.js';
 
-  let batteryCapacity  = persisted('batteryCapacity', DEFAULTS.batteryCapacity);
-  let currentBattery   = persisted('currentBattery', DEFAULTS.currentBattery);
-  let tariffPerKwh     = persisted('tariffPerKwh', DEFAULTS.tariffPerKwh);
-  let chargerPower     = persisted('chargerPower', DEFAULTS.chargerPower);
-  let targetBattery    = persisted('targetBattery', DEFAULTS.targetBattery);
-  let availableHours   = persisted('availableHours', DEFAULTS.availableHours);
-  let availableMinutes = persisted('availableMinutes', DEFAULTS.availableMinutes);
-  let budget           = persisted('budget', DEFAULTS.budget);
-  let location         = persisted('location', 'spklu');
-  let activeTab        = persisted('activeTab', 'target');
-  let selectedEV       = persisted('selectedEV', 'custom');
-  let efficiency       = persisted('efficiency', CHARGING_EFFICIENCY);
+  const urlState = urlToState({});
+  const g = (key, def) => urlState[key] ?? persisted(key, def);
+
+  let activeTab        = g('tab', 'target');
+  let location         = g('location', 'spklu');
+  let batteryCapacity  = g('batteryCapacity', DEFAULTS.batteryCapacity);
+  let currentBattery   = g('currentBattery', DEFAULTS.currentBattery);
+  let chargerPower     = g('chargerPower', DEFAULTS.chargerPower);
+  let targetBattery    = g('targetBattery', DEFAULTS.targetBattery);
+  let availableHours   = g('availableHours', DEFAULTS.availableHours);
+  let availableMinutes = g('availableMinutes', DEFAULTS.availableMinutes);
+  let budget           = g('budget', DEFAULTS.budget);
+  let efficiency       = g('efficiency', CHARGING_EFFICIENCY);
+  let selectedEV       = g('selectedEV', 'custom');
+  let tariffPerKwh     = g('tariffPerKwh', DEFAULTS.tariffPerKwh);
 
   $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
   $: sharedValid = Object.values(shared).every(e => e === '');
@@ -29,18 +33,35 @@
   $: timeErrors  = validateTime({ availableHours, availableMinutes });
   $: activePBJTRate = location === 'spklu' ? PBJT_TL_RATE : 0;
   
-  $: persist('batteryCapacity', batteryCapacity);
-  $: persist('currentBattery', currentBattery);
-  $: persist('tariffPerKwh', tariffPerKwh);
-  $: persist('chargerPower', chargerPower);
-  $: persist('targetBattery', targetBattery);
-  $: persist('availableHours', availableHours);
-  $: persist('availableMinutes', availableMinutes);
-  $: persist('budget', budget);
-  $: persist('location', location);
-  $: persist('activeTab', activeTab);
-  $: persist('selectedEV', selectedEV);
-  $: persist('efficiency', efficiency);
+  $: {
+    persist('activeTab', activeTab);
+    persist('location', location);
+    persist('batteryCapacity', batteryCapacity);
+    persist('currentBattery', currentBattery);
+    persist('chargerPower', chargerPower);
+    persist('targetBattery', targetBattery);
+    persist('availableHours', availableHours);
+    persist('availableMinutes', availableMinutes);
+    persist('budget', budget);
+    persist('efficiency', efficiency);
+    persist('selectedEV', selectedEV);
+    persist('tariffPerKwh', tariffPerKwh);
+  }
+
+  $: stateToUrl({
+    tab: activeTab,
+    location,
+    batteryCapacity,
+    currentBattery,
+    chargerPower,
+    targetBattery,
+    availableHours,
+    availableMinutes,
+    budget,
+    efficiency,
+    selectedEV,
+    tariffPerKwh,
+  });
   
   const tabs = [
     {
