@@ -4,6 +4,7 @@
   export let finalBattery = null;    // mode 2
   export let batteryGained = null;   // mode 2
   export let mode = 'target';        // 'target' | 'time'
+  export let T;
 </script>
 
 <div>
@@ -29,5 +30,5 @@
       </div>
     {/if}
   </div>
-  <p class="text-xs text-slate-400 mt-1 text-center">Segmen berwarna = energi yang akan diisi</p>
+  <p class="text-xs text-slate-400 mt-1 text-center">{T.progressBarLabel}</p>
 </div>

@@ -11,6 +11,7 @@
   export let pbjt_rate;
   export let selectedEV = 'custom';
   export let efficiency;
+  export let T;
 
   $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);
@@ -18,8 +19,8 @@
   $: rangeGained = evPreset && result ? calcRange(evPreset.range, result.finalBattery) : null;
 
   $: timeLabel = result
-    ? ((result.actualHours > 0 ? `${result.actualHours} jam` : '') +
-       (result.actualMinutes > 0 ? ` ${result.actualMinutes} menit` : '')).trim() || '< 1 menit'
+    ? ((result.actualHours > 0 ? `${result.actualHours} ${T.jamUnit}` : '') +
+      (result.actualMinutes > 0 ? ` ${result.actualMinutes} ${T.menitUnit}` : '')).trim() || '< 1 menit'
     : '';
 
   // Apakah pengisian selesai sebelum waktu tersedia habis
@@ -28,14 +29,14 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <label for="availableHours" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Waktu Pengisian</label>
+  <label for="availableHours" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargingTimeLabel}</label>
   <div class="flex gap-3">
     <div class="flex-1 flex flex-col gap-1">
       <div class="flex items-center border {availableHoursError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
         <input id="availableHours" type="number" bind:value={availableHours} min="0" max="24"
           on:blur={() => availableHours = clamp(availableHours, 0, 24)}
           class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">jam</span>
+        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">{T.jamUnit}</span>
       </div>
       {#if availableHoursError}<p class="text-xs text-red-500 mt-0.5">{availableHoursError}</p>{/if}
     </div>
@@ -44,7 +45,7 @@
         <input id="availableMinutes" type="number" bind:value={availableMinutes} min="0" max="59"
           on:blur={() => availableMinutes = clamp(availableMinutes, 0, 59)}
           class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">menit</span>
+        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">{T.menitUnit}</span>
       </div>
       {#if availableMinutesError}<p class="text-xs text-red-500 mt-0.5">{availableMinutesError}</p>{/if}
     </div>
@@ -52,7 +53,7 @@
   {#if timeError}<p class="text-xs text-red-500 mt-0.5">{timeError}</p>{/if}
 </div>
 
-<ProgressBar mode="time" {currentBattery} finalBattery={result.finalBattery} batteryGained={result.batteryGained} />
+<ProgressBar mode="time" {currentBattery} finalBattery={result.finalBattery} batteryGained={result.batteryGained} {T} />
 
 {#if showResult}
   <div class="space-y-3 pt-2 border-t border-slate-100">
@@ -66,7 +67,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi dari PLN</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyFromGrid}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyFromGrid.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -79,7 +80,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi ke Baterai</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyToBattery}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyToBattery.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -95,7 +96,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Baterai Akhir</p>
+          <p class="text-xs text-slate-500 font-medium">{T.batteryFinal}</p>
           <p class="text-xl font-bold text-slate-800">{result.finalBattery.toFixed(1)} <span class="text-sm font-normal text-slate-500">%</span></p>
         </div>
       </div>
@@ -109,9 +110,9 @@
             </svg>
           </div>
           <div>
-            <p class="text-xs text-slate-500 font-medium">Estimasi Jarak <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
+            <p class="text-xs text-slate-500 font-medium">{T.estimatedRange} <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
             <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
-            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {result.finalBattery.toFixed(1)}% baterai</p>
+            <p class="text-xs text-slate-400 mt-0.5">{T.basedOnBattery(result.finalBattery.toFixed(1))}</p>
           </div>
         </div>
       {:else}
@@ -125,25 +126,25 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
         </svg>
-        <p class="text-xs text-emerald-700">Baterai akan penuh dalam <span class="font-semibold">{timeLabel}</span>, lebih cepat dari waktu yang tersedia.</p>
+        <p class="text-xs text-emerald-700">{T.chargeCompleteMsg(timeLabel)}</p>
       </div>
     {/if}
 
     <!-- Rincian Biaya -->
     <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
-      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rincian Biaya</p>
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{T.costBreakdown}</p>
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">Biaya Energi ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
+        <span class="text-sm text-slate-600">{T.energyCostLabel} ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.energyCost)}</span>
       </div>
       {#if pbjt_rate > 0}
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">PBJT-TL <em>(10% dari biaya energi)</em></span>
+        <span class="text-sm text-slate-600">{T.pbjtLabel} <em>({T.pbjtDesc})</em></span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.pbjt)}</span>
       </div>
       {/if}
       <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span class="text-sm font-bold text-slate-800">Total Biaya</span>
+        <span class="text-sm font-bold text-slate-800">{T.totalCostLabel}</span>
         <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.totalCost)}</span>
       </div>
     </div>

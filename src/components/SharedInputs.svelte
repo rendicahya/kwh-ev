@@ -2,13 +2,13 @@
   import { clamp } from '../lib/validation.js';
   import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF } from '../lib/constants.js';
   import { persisted, persist } from '../lib/persist.js';
-  import { onMount } from 'svelte';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
   export let location;
   export let selectedEV;
   export let efficiency;
+  export let T;
 
   let selectedCharger = persisted('selectedCharger', CHARGER_PRESETS.find(p => p.power === chargerPower)?.label ?? 'custom');
   export let homeDaya = persisted('homeDaya', HOME_TARIFFS[2].label);
@@ -59,19 +59,19 @@
 
 <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
   <div class="bg-emerald-500 px-6 py-4">
-    <h2 class="text-white font-semibold text-base tracking-wide">🚗 Data Kendaraan & Charging</h2>
+    <h2 class="text-white font-semibold text-base tracking-wide">{T.cardVehicleTitle}</h2>
   </div>
   <div class="p-6 space-y-5">
 
     <!-- EV Preset -->
     <div class="flex flex-col gap-1">
-      <label for="evPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Model EV</label>
+      <label for="evPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.evModelLabel}</label>
       <div class="relative">
         <select id="evPreset" value={selectedEV} on:change={onEVChange}
           class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
                  border border-slate-200 rounded-xl outline-none
                  focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
-          <option value="custom" disabled={selectedEV !== 'custom'}>✏️ Custom</option>
+          <option value="custom" disabled={selectedEV !== 'custom'}>{T.evCustom}</option>
           {#each EV_PRESETS as preset}
             <option value={preset.label}>{preset.label} — {preset.capacity} kWh</option>
           {/each}
@@ -87,7 +87,7 @@
     <div class="flex flex-col gap-5">
 
       <div class="flex flex-col gap-1">
-        <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kapasitas Baterai EV</label>
+        <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.batteryCapacityLabel}</label>
         <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
           <input id="batteryCapacity" type="number" bind:value={batteryCapacity} min="0.1"
             on:input={() => selectedEV = 'custom'}
@@ -100,7 +100,7 @@
 
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
-          <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Saat Ini</label>
+          <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.currentBatteryLabel}</label>
           <span class="text-sm font-bold text-emerald-600">{currentBattery}%</span>
         </div>
         <input id="currentBattery" type="range" bind:value={currentBattery} min="0" max="100" step="1"
@@ -118,7 +118,7 @@
 
     <!-- Lokasi Charging -->
     <div class="flex flex-col gap-2">
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Lokasi Charging</p>
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.locationLabel}</p>
       <div class="grid grid-cols-2 gap-2">
         <button
           class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold
@@ -126,7 +126,7 @@
               ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
               : 'border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300'}"
           on:click={() => onLocationChange('home')}>
-          <span class="text-lg">🏠</span> Rumah
+          {T.locationHome}
         </button>
         <button
           class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold
@@ -134,19 +134,19 @@
               ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
               : 'border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300'}"
           on:click={() => onLocationChange('spklu')}>
-          <span class="text-lg">⚡</span> SPKLU
+          {T.locationSpklu}
         </button>
       </div>
 
       <!-- Info SPKLU -->
       {#if location === 'spklu'}
-        <p class="text-xs text-slate-400">Tarif SPKLU: Rp2.466,78/kWh + PBJT-TL 10%</p>
+        <p class="text-xs text-slate-400">{T.spkluInfo}</p>
       {/if}
 
       <!-- Pilihan daya rumah -->
       {#if location === 'home'}
         <div class="flex flex-col gap-1">
-          <label for="homeDaya" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Listrik Rumah</label>
+          <label for="homeDaya" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.homeDayaLabel}</label>
           <div class="relative">
             <select id="homeDaya" value={homeDaya} on:change={onHomeDayaChange}
               class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
@@ -162,14 +162,14 @@
               </svg>
             </div>
           </div>
-          <p class="text-xs text-slate-400">Tarif: Rp{HOME_TARIFFS.find(t => t.label === homeDaya)?.tariff.toLocaleString('id-ID')}/kWh · Tanpa PBJT-TL</p>
+          <p class="text-xs text-slate-400">{T.homeInfo(HOME_TARIFFS.find(h => h.label === homeDaya)?.tariff.toLocaleString('id-ID'))}</p>
         </div>
       {/if}
     </div>
 
     <!-- Charger Preset -->
     <div class="flex flex-col gap-1">
-      <label for="chargerPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tipe Charger</label>
+      <label for="chargerPreset" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargerTypeLabel}</label>
       <div class="relative">
         <select id="chargerPreset" value={selectedCharger} on:change={onChargerChange}
           class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
@@ -189,7 +189,7 @@
     </div>
 
     <div class="flex flex-col gap-1">
-      <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Daya Charger</label>
+      <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargerPowerLabel}</label>
       <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
         <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
   on:input={() => {
@@ -203,19 +203,18 @@
       {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
     </div>
 
-    
     <!-- Efisiensi Pengisian -->
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between">
-        <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Efisiensi Pengisian</label>
+        <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.efficiencyLabel}</label>
         <span class="text-sm font-bold text-emerald-600">{Math.round(efficiency * 100)}%</span>
       </div>
       <input id="efficiency" type="range" bind:value={efficiency} min="0.85" max="0.95" step="0.01"
       class="w-full h-2 rounded-full appearance-none cursor-pointer
       bg-slate-200 accent-emerald-500" />
       <div class="flex justify-between text-xs text-slate-400">
-        <span>85% (konservatif)</span>
-        <span>95% (optimal)</span>
+        <span>{T.efficiencyConservative}</span>
+        <span>{T.efficiencyOptimal}</span>
       </div>
     </div>
   </div>

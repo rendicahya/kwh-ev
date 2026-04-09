@@ -2,7 +2,6 @@
   import { clamp } from '../lib/validation.js';
   import { validateBudget } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
-  import ResultCard from './ResultCard.svelte';
   import { calcBudget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
 
@@ -12,6 +11,7 @@
   export let pbjt_rate;
   export let selectedEV = 'custom';
   export let efficiency;
+  export let T;
 
   $: budgetError = validateBudget({ budget });
   $: result = !budgetError ? calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate, efficiency }) : null;
@@ -20,13 +20,13 @@
   $: showResult = sharedValid && !budgetError && result !== null && result.energyToBattery > 0;
 
   $: timeLabel = result
-    ? ((result.chargingHours > 0 ? `${result.chargingHours} jam` : '') +
-      (result.chargingMinutes > 0 ? ` ${result.chargingMinutes} menit` : '')).trim() || '< 1 menit'
+    ? ((result.chargingHours > 0 ? `${result.chargingHours} ${T.jamUnit}` : '') +
+      (result.chargingMinutes > 0 ? ` ${result.chargingMinutes} ${T.menitUnit}` : '')).trim() || '< 1 menit'
     : '';
 </script>
 
 <div class="flex flex-col gap-1">
-  <label for="budget" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Biaya yang Tersedia</label>
+  <label for="budget" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.budgetLabel}</label>
   <div class="flex items-center border {budgetError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
     <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-r border-slate-200">Rp</span>
     <input id="budget" type="number" bind:value={budget} min="0" step="1000"
@@ -36,7 +36,7 @@
   {#if budgetError}
     <p class="text-xs text-red-500 mt-0.5">{budgetError}</p>
   {:else if pbjt_rate > 0}
-    <p class="text-xs text-slate-400 mt-0.5">Sudah termasuk PBJT-TL 10%</p>
+    <p class="text-xs text-slate-400 mt-0.5">{T.budgetPbjtInfo}</p>
   {/if}
 </div>
 
@@ -46,9 +46,10 @@
     {currentBattery}
     finalBattery={result.finalBattery}
     batteryGained={result.batteryGained}
+    {T}
   />
 {:else}
-  <ProgressBar mode="time" {currentBattery} finalBattery={currentBattery} batteryGained={0} />
+  <ProgressBar mode="time" {currentBattery} finalBattery={currentBattery} batteryGained={0} {T} />
 {/if}
 
 {#if showResult}
@@ -63,7 +64,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi dari PLN</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyFromGrid}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyFromGrid.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -76,7 +77,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi ke Baterai</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyToBattery}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyToBattery.toFixed(0)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -92,7 +93,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Baterai Akhir</p>
+          <p class="text-xs text-slate-500 font-medium">{T.batteryFinal}</p>
           <p class="text-xl font-bold text-slate-800">{result.finalBattery.toFixed(1)} <span class="text-sm font-normal text-slate-500">%</span></p>
         </div>
       </div>
@@ -106,9 +107,9 @@
             </svg>
           </div>
           <div>
-            <p class="text-xs text-slate-500 font-medium">Estimasi Jarak <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
+            <p class="text-xs text-slate-500 font-medium">{T.estimatedRange} <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
             <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
-            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {result.finalBattery.toFixed(1)}% baterai</p>
+            <p class="text-xs text-slate-400 mt-0.5">{T.basedOnBattery(result.finalBattery.toFixed(1))}</p>
           </div>
         </div>
       {:else}
@@ -124,26 +125,26 @@
         </svg>
       </div>
       <div>
-        <p class="text-xs text-slate-500 font-medium">Waktu Pengisian</p>
+        <p class="text-xs text-slate-500 font-medium">{T.chargingTimeLabel}</p>
         <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
       </div>
     </div>
 
     <!-- Rincian Biaya -->
     <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
-      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rincian Biaya</p>
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{T.costBreakdown}</p>
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">Biaya Energi ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
+        <span class="text-sm text-slate-600">{T.energyCostLabel} ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.energyCost)}</span>
       </div>
       {#if pbjt_rate > 0}
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">PBJT-TL <em>(10% dari biaya energi)</em></span>
+        <span class="text-sm text-slate-600">{T.pbjtLabel} <em>({T.pbjtDesc})</em></span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.pbjt)}</span>
       </div>
       {/if}
       <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span class="text-sm font-bold text-slate-800">Total Biaya</span>
+        <span class="text-sm font-bold text-slate-800">{T.totalCostLabel}</span>
         <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.actualCost)}</span>
       </div>
     </div>

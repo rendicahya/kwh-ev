@@ -1,30 +1,30 @@
-export function validateShared({ batteryCapacity, chargerPower, currentBattery }) {
+export function validateShared({ batteryCapacity, chargerPower, currentBattery }, T) {
   return {
-    batteryCapacityError: batteryCapacity <= 0 ? 'Kapasitas harus lebih dari 0 kWh.' : '',
-    chargerPowerError: chargerPower <= 0 ? 'Daya charger harus lebih dari 0 kW.' : '',
-    currentBatteryError: currentBattery < 0 || currentBattery > 100 ? 'Baterai saat ini harus antara 0–100%.' : '',
+    batteryCapacityError: batteryCapacity <= 0 ? T.errorCapacity : '',
+    chargerPowerError: chargerPower <= 0 ? T.errorChargerPower : '',
+    currentBatteryError: currentBattery < 0 || currentBattery > 100 ? T.errorCurrentBattery : '',
   };
 }
 
-export function validateTarget({ targetBattery, currentBattery }) {
-  if (targetBattery < 0 || targetBattery > 100) return 'Target baterai harus antara 0–100%.';
-  if (targetBattery <= currentBattery) return 'Target harus lebih besar dari baterai saat ini.';
+export function validateTarget({ targetBattery, currentBattery }, T) {
+  if (targetBattery < 0 || targetBattery > 100) return T.errorTargetRange;
+  if (targetBattery <= currentBattery) return T.errorTargetMin;
   return '';
 }
 
-export function validateTime({ availableHours, availableMinutes }) {
+export function validateTime({ availableHours, availableMinutes }, T) {
   return {
-    availableHoursError: availableHours < 0 ? 'Jam tidak boleh negatif.' : '',
-    availableMinutesError: availableMinutes < 0 || availableMinutes > 59 ? 'Menit harus antara 0–59.' : '',
-    timeError: availableHours <= 0 && availableMinutes <= 0 ? 'Masukkan waktu yang tersedia.' : '',
+    availableHoursError: availableHours < 0 ? T.errorHours : '',
+    availableMinutesError: availableMinutes < 0 || availableMinutes > 59 ? T.errorMinutes : '',
+    timeError: availableHours <= 0 && availableMinutes <= 0 ? T.errorTimeEmpty : '',
   };
+}
+
+export function validateBudget({ budget }, T) {
+  if (budget <= 0) return T.errorBudgetZero;
+  return '';
 }
 
 export function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max);
-}
-
-export function validateBudget({ budget }) {
-  if (budget <= 0) return 'Biaya harus lebih dari Rp0.';
-  return '';
 }

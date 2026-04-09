@@ -10,6 +10,7 @@
   import { persisted, persist } from './lib/persist.js';
   import { CHARGING_EFFICIENCY } from './lib/constants.js';
   import { stateToUrl, urlToState } from './lib/url.js';
+  import { langStore, t } from './lib/i18n.js';
 
   const urlState = urlToState({});
   const g = (key, def) => urlState[key] ?? persisted(key, def);
@@ -26,11 +27,12 @@
   let efficiency       = g('efficiency', CHARGING_EFFICIENCY);
   let selectedEV       = g('selectedEV', 'custom');
   let tariffPerKwh     = g('tariffPerKwh', DEFAULTS.tariffPerKwh);
+  let lang = 'id';
 
-  $: shared      = validateShared({ batteryCapacity, chargerPower, currentBattery });
+  $: shared = validateShared({ batteryCapacity, chargerPower, currentBattery }, T);
+  $: targetBatteryError = validateTarget({ targetBattery, currentBattery }, T);
+  $: timeErrors = validateTime({ availableHours, availableMinutes }, T);
   $: sharedValid = Object.values(shared).every(e => e === '');
-  $: targetBatteryError = validateTarget({ targetBattery, currentBattery });
-  $: timeErrors  = validateTime({ availableHours, availableMinutes });
   $: activePBJTRate = location === 'spklu' ? PBJT_TL_RATE : 0;
   
   $: {
@@ -63,25 +65,16 @@
     tariffPerKwh,
   });
   
-  const tabs = [
-    {
-      id: 'target',
-      label: '🎯 Target Baterai',
-      tooltip: 'Tentukan target % baterai yang ingin dicapai. App akan menghitung energi, waktu, dan biaya yang dibutuhkan.',
-    },
-    {
-      id: 'time',
-      label: '⏱️ Waktu Pengisian',
-      tooltip: 'Masukkan berapa lama waktu yang tersedia untuk mengisi daya. App akan menghitung seberapa penuh baterai dan biayanya.',
-    },
-    {
-      id: 'budget',
-      label: '💰 Anggaran',
-      tooltip: 'Masukkan anggaran biaya yang dimiliki. App akan menghitung energi dan % baterai yang bisa didapat.',
-    },
+  $: tabs = [
+    { id: 'target', label: T.tabTarget, tooltip: T.tooltipTarget },
+    { id: 'time',   label: T.tabTime,   tooltip: T.tooltipTime   },
+    { id: 'budget', label: T.tabBudget, tooltip: T.tooltipBudget },
   ];
 
+  langStore.subscribe(l => lang = l);
+
   $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
+  $: T = t(lang);
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 font-sans">
@@ -94,9 +87,15 @@
         </svg>
       </div>
       <div>
-        <h1 class="text-lg font-bold text-slate-800 leading-tight">EV Charging Calculator</h1>
-        <p class="text-xs text-slate-400">Hitung biaya & waktu pengisian daya</p>
+        <h1 class="text-lg font-bold text-slate-800 leading-tight">{T.appTitle}</h1>
+        <p class="text-xs text-slate-400">{T.appSubtitle}</p>
       </div>
+      <button
+        on:click={() => langStore.toggle()}
+        class="ml-auto px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-200
+               bg-white text-slate-600 hover:bg-slate-50 transition-colors">
+        {lang === 'id' ? 'EN' : 'ID'}
+      </button>
     </div>
   </header>
 
@@ -104,11 +103,11 @@
 
     <SharedInputs
       bind:batteryCapacity bind:currentBattery bind:tariffPerKwh bind:chargerPower
-      bind:location bind:selectedEV
-      bind:efficiency
+      bind:location bind:selectedEV bind:efficiency
       batteryCapacityError={shared.batteryCapacityError}
       chargerPowerError={shared.chargerPowerError}
       currentBatteryError={shared.currentBatteryError}
+      {T}
     />
 
   <!-- Tab Switcher -->
@@ -141,6 +140,7 @@
             pbjt_rate={activePBJTRate}
             {selectedEV}
             {efficiency}
+            {T}
           />
         {:else if activeTab === 'time'}
           <ModeTime
@@ -151,6 +151,7 @@
             timeError={timeErrors.timeError}
             {sharedValid}
             pbjt_rate={activePBJTRate}
+            {T}
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
@@ -158,6 +159,7 @@
             bind:budget
             {sharedValid}
             pbjt_rate={activePBJTRate}
+            {T}
           />
         {/if}
       </div>

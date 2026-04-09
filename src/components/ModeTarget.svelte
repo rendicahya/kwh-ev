@@ -11,6 +11,7 @@
   export let pbjt_rate;
   export let selectedEV = 'custom';
   export let efficiency;
+  export let T;
 
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
@@ -27,7 +28,7 @@
 <!-- Slider Baterai Target -->
 <div class="flex flex-col gap-2">
   <div class="flex items-center justify-between">
-    <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Baterai Target</label>
+    <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.targetBatteryLabel}</label>
     <span class="text-sm font-bold {targetBattery > 80 ? 'text-amber-500' : 'text-emerald-600'}">{targetBattery}%</span>
   </div>
   <input id="targetBattery" type="range" bind:value={targetBattery} min="0" max="100" step="1"
@@ -44,13 +45,13 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
       </svg>
-      <p class="text-xs text-amber-700">Pengisian di atas 80% memperlambat laju pengisian dan dapat mempercepat degradasi baterai jangka panjang.</p>
+      <p class="text-xs text-amber-700">{T.warningOver80}</p>
     </div>
   {/if}
   {#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
 </div>
 
-<ProgressBar mode="target" {currentBattery} {targetBattery} />
+<ProgressBar mode="target" {currentBattery} {targetBattery} {T} />
 
 {#if showResult}
   <div class="space-y-3 pt-2 border-t border-slate-100">
@@ -64,7 +65,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi dari PLN</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyFromGrid}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyFromGrid.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -77,7 +78,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Energi ke Baterai</p>
+          <p class="text-xs text-slate-500 font-medium">{T.energyToBattery}</p>
           <p class="text-xl font-bold text-slate-800">{result.energyNeeded.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
         </div>
       </div>
@@ -92,7 +93,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-medium">Waktu Pengisian</p>
+          <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
           <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
         </div>
       </div>
@@ -106,9 +107,9 @@
             </svg>
           </div>
           <div>
-            <p class="text-xs text-slate-500 font-medium">Estimasi Jarak <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
+            <p class="text-xs text-slate-500 font-medium">{T.estimatedRange} <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
             <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
-            <p class="text-xs text-slate-400 mt-0.5">Berdasarkan {targetBattery}% baterai</p>
+            <p class="text-xs text-slate-400 mt-0.5">{T.basedOnBattery(targetBattery)}</p>
           </div>
         </div>
       {:else}
@@ -119,19 +120,19 @@
 
     <!-- Rincian Biaya -->
     <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
-      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rincian Biaya</p>
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{T.costBreakdown}</p>
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">Biaya Energi ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
+        <span class="text-sm text-slate-600">{T.energyCostLabel} ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.energyCost)}</span>
       </div>
       {#if pbjt_rate > 0}
       <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">PBJT-TL <em>(10% dari biaya energi)</em></span>
+        <span class="text-sm text-slate-600">{T.pbjtLabel} <em>({T.pbjtDesc})</em></span>
         <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.pbjt)}</span>
       </div>
       {/if}
       <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span class="text-sm font-bold text-slate-800">Total Biaya</span>
+        <span class="text-sm font-bold text-slate-800">{T.totalCostLabel}</span>
         <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.totalCost)}</span>
       </div>
     </div>
