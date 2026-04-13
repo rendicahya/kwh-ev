@@ -11,6 +11,8 @@
   import { CHARGING_EFFICIENCY } from './lib/constants.js';
   import { stateToUrl, urlToState } from './lib/url.js';
   import { langStore, t } from './lib/i18n.js';
+  import HistoryTab from './components/HistoryTab.svelte';
+  import SaveSessionButton from './components/SaveSessionButton.svelte';
 
   const urlState = urlToState({});
   const g = (key, def) => urlState[key] ?? persisted(key, def);
@@ -28,6 +30,7 @@
   let selectedEV       = g('selectedEV', 'custom');
   let tariffPerKwh     = g('tariffPerKwh', DEFAULTS.tariffPerKwh);
   let lang = 'id';
+  let sessionResult = null;
 
   $: shared = validateShared({ batteryCapacity, chargerPower, currentBattery }, T);
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery }, T);
@@ -69,12 +72,33 @@
     { id: 'target', label: T.tabTarget, tooltip: T.tooltipTarget },
     { id: 'time',   label: T.tabTime,   tooltip: T.tooltipTime   },
     { id: 'budget', label: T.tabBudget, tooltip: T.tooltipBudget },
+    { id: 'history', label: T.tabHistory, tooltip: T.tooltipHistory },
   ];
+
+  // Session data untuk disimpan — dihitung ulang setiap mode aktif berubah
+  $: sessionDataTarget = {
+    evModel: selectedEV !== 'custom' ? selectedEV : null,
+    batteryCapacity,
+    batteryStart: currentBattery,
+    batteryEnd: targetBattery,
+    energyFromGrid: null,   // diisi dari ModeTarget via event
+    cost: null,
+    location,
+  };
 
   langStore.subscribe(l => lang = l);
 
   $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
   $: T = t(lang);
+
+  function onModeResult(e) {
+    sessionResult = e.detail;
+  }
+
+  function onTabChange(tabId) {
+    activeTab = tabId;
+    sessionResult = null;   // reset manual saat ganti tab
+  }
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 font-sans">
@@ -117,7 +141,7 @@
           <button
             class="w-full py-2.5 px-3 rounded-xl text-sm font-semibold transition-all duration-200
               {activeTab === tab.id ? 'bg-emerald-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}"
-            on:click={() => activeTab = tab.id}>
+            on:click={() => onTabChange(tab.id)}>
             {tab.label}
           </button>
           <Tooltip text={tab.tooltip} />
@@ -141,6 +165,7 @@
             {selectedEV}
             {efficiency}
             {T}
+            on:result={onModeResult}
           />
         {:else if activeTab === 'time'}
           <ModeTime
@@ -152,6 +177,7 @@
             {sharedValid}
             pbjt_rate={activePBJTRate}
             {T}
+            on:result={onModeResult}
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
@@ -160,10 +186,31 @@
             {sharedValid}
             pbjt_rate={activePBJTRate}
             {T}
+            on:result={onModeResult}
           />
+        {:else if activeTab === 'history'}
+          <HistoryTab {T} />
         {/if}
       </div>
     </div>
+
+    {#if sessionResult}
+      <SaveSessionButton {T}
+        sessionData={{
+          evModel: selectedEV !== 'custom' ? selectedEV : null,
+          batteryCapacity,
+          batteryStart: currentBattery,
+          batteryEnd: targetBattery,         // sesuaikan per mode
+          energyFromGrid: sessionResult.energyFromGrid,
+          cost: sessionResult.cost,
+          location,
+        }}
+      />
+    {/if}
+
+    <p class="text-center text-xs text-slate-400 pb-2">
+      Dibuat dengan ❤️ untuk komunitas EV Indonesia
+    </p>
 
   </main>
 </div>

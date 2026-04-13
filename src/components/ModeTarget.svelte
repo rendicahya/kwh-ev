@@ -4,6 +4,7 @@
   import ResultCard from './ResultCard.svelte';
   import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
+  import { createEventDispatcher } from 'svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -12,6 +13,8 @@
   export let selectedEV = 'custom';
   export let efficiency;
   export let T;
+
+  const dispatch = createEventDispatcher();
 
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
@@ -23,6 +26,13 @@
     const m = result.chargingMinutes > 0 ? ` ${result.chargingMinutes} menit` : '';
     return (h + m).trim() || '< 1 menit';
   })();
+
+  $: if (showResult && result) {
+    dispatch('result', {
+      energyFromGrid: result.energyFromGrid,
+      cost: result.totalCost,
+    });
+  }
 </script>
 
 <!-- Slider Baterai Target -->

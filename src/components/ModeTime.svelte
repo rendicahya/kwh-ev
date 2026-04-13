@@ -3,6 +3,7 @@
   import ProgressBar from './ProgressBar.svelte';
   import { calcTime, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
+  import { createEventDispatcher } from 'svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
@@ -12,6 +13,8 @@
   export let selectedEV = 'custom';
   export let efficiency;
   export let T;
+
+  const dispatch = createEventDispatcher();
 
   $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);
@@ -26,6 +29,13 @@
   // Apakah pengisian selesai sebelum waktu tersedia habis
   $: chargeComplete = result && (result.actualHours < availableHours ||
     (result.actualHours === availableHours && result.actualMinutes < availableMinutes));
+
+  $: if (showResult && result) {
+    dispatch('result', {
+      energyFromGrid: result.energyFromGrid,
+      cost: result.totalCost,
+    });
+  }
 </script>
 
 <div class="flex flex-col gap-1">

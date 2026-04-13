@@ -4,6 +4,7 @@
   import ProgressBar from './ProgressBar.svelte';
   import { calcBudget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
+  import { createEventDispatcher } from 'svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let budget;
@@ -12,6 +13,8 @@
   export let selectedEV = 'custom';
   export let efficiency;
   export let T;
+
+  const dispatch = createEventDispatcher();
 
   $: budgetError = validateBudget({ budget });
   $: result = !budgetError ? calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate, efficiency }) : null;
@@ -23,6 +26,13 @@
     ? ((result.chargingHours > 0 ? `${result.chargingHours} ${T.jamUnit}` : '') +
       (result.chargingMinutes > 0 ? ` ${result.chargingMinutes} ${T.menitUnit}` : '')).trim() || '< 1 menit'
     : '';
+
+  $: if (showResult && result) {
+    dispatch('result', {
+      energyFromGrid: result.energyFromGrid,
+      cost: result.actualCost,
+    });
+  }
 </script>
 
 <div class="flex flex-col gap-1">
