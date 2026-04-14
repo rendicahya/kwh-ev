@@ -32,6 +32,9 @@
   let lang = 'id';
   let sessionResult = null;
 
+  langStore.subscribe(l => lang = l);
+
+  $: T = t(lang);
   $: shared = validateShared({ batteryCapacity, chargerPower, currentBattery }, T);
   $: targetBatteryError = validateTarget({ targetBattery, currentBattery }, T);
   $: timeErrors = validateTime({ availableHours, availableMinutes }, T);
@@ -75,21 +78,7 @@
     { id: 'history', label: T.tabHistory, tooltip: T.tooltipHistory },
   ];
 
-  // Session data untuk disimpan — dihitung ulang setiap mode aktif berubah
-  $: sessionDataTarget = {
-    evModel: selectedEV !== 'custom' ? selectedEV : null,
-    batteryCapacity,
-    batteryStart: currentBattery,
-    batteryEnd: targetBattery,
-    energyFromGrid: null,   // diisi dari ModeTarget via event
-    cost: null,
-    location,
-  };
-
-  langStore.subscribe(l => lang = l);
-
   $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
-  $: T = t(lang);
 
   function onModeResult(e) {
     sessionResult = e.detail;
@@ -194,13 +183,13 @@
       </div>
     </div>
 
-    {#if sessionResult}
+    {#if sessionResult && activeTab !== 'history'}
       <SaveSessionButton {T}
         sessionData={{
           evModel: selectedEV !== 'custom' ? selectedEV : null,
           batteryCapacity,
           batteryStart: currentBattery,
-          batteryEnd: targetBattery,         // sesuaikan per mode
+          batteryEnd: activeTab === 'target' ? targetBattery : (sessionResult.batteryEnd ?? currentBattery),
           energyFromGrid: sessionResult.energyFromGrid,
           cost: sessionResult.cost,
           location,
