@@ -1,7 +1,6 @@
 <script>
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
-  import ResultCard from './ResultCard.svelte';
   import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
   import { createEventDispatcher } from 'svelte';
@@ -22,8 +21,8 @@
   $: rangeGained = evPreset ? calcRange(evPreset.range, targetBattery) : null;
 
   $: timeLabel = (() => {
-    const h = result.chargingHours > 0 ? `${result.chargingHours} jam` : '';
-    const m = result.chargingMinutes > 0 ? ` ${result.chargingMinutes} menit` : '';
+    const h = result.chargingHours > 0 ? `${result.chargingHours} ${T.jamUnit}` : '';
+    const m = result.chargingMinutes > 0 ? ` ${result.chargingMinutes} ${T.menitUnit}` : '';
     return (h + m).trim() || '< 1 menit';
   })();
 
