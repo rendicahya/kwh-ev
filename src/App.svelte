@@ -6,7 +6,7 @@
   import ModeTime from './components/ModeTime.svelte';
   import ModeBudget from './components/ModeBudget.svelte';
   import Tooltip from './components/Tooltip.svelte';
-  import { SPKLU_TARIFF, PBJT_TL_RATE, HOME_TARIFFS } from './lib/constants.js';
+  import { PBJT_TL_RATE } from './lib/constants.js';
   import { persisted, persist } from './lib/persist.js';
   import { CHARGING_EFFICIENCY } from './lib/constants.js';
   import { stateToUrl, urlToState } from './lib/url.js';
@@ -197,9 +197,7 @@
       />
     {/if}
 
-    <p class="text-center text-xs text-slate-400 pb-2">
-      Dibuat dengan ❤️ untuk komunitas EV Indonesia
-    </p>
+    <p class="text-center text-xs text-slate-400 pb-2">{T.footer}</p>
 
   </main>
 </div>

@@ -106,6 +106,8 @@ export const translations = {
 
     // Misc
     progressBarLabel: 'Segmen berwarna = energi yang akan diisi',
+
+    footer: 'Dibuat dengan ❤️ untuk komunitas EV Indonesia',
   },
 
   en: {
@@ -215,6 +217,8 @@ export const translations = {
 
     // Misc
     progressBarLabel: 'Colored segment = energy to be charged',
+
+    footer: 'Made with ❤️ for the Indonesian EV community',
   },
 };
 
