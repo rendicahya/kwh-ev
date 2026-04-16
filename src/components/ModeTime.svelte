@@ -34,6 +34,7 @@
     dispatch('result', {
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
+      batteryEnd: result.finalBattery,
     });
   }
 </script>
