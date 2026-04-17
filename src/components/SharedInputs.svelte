@@ -34,17 +34,27 @@
   }
 
   function onEVChange(e) {
-    const preset = EV_PRESETS.find(p => p.label === e.target.value);
+    const val = e.target.value;
+    if (val === 'custom') {
+      selectedEV = 'custom';  // ← tambahkan ini
+      return;
+    }
+    const preset = EV_PRESETS.find(p => p.label === val);
     if (preset) {
-      selectedEV = e.target.value;
+      selectedEV = val;
       batteryCapacity = preset.capacity;
     }
   }
 
   function onChargerChange(e) {
-    const preset = CHARGER_PRESETS.find(p => p.label === e.target.value);
+    const val = e.target.value;
+    if (val === 'custom') {
+      selectedCharger = 'custom';  // ← tambahkan ini
+      return;
+    }
+    const preset = CHARGER_PRESETS.find(p => p.label === val);
     if (preset) {
-      selectedCharger = e.target.value;
+      selectedCharger = val;
       chargerPower = preset.power;
     }
   }
@@ -71,10 +81,10 @@
           class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
                  border border-slate-200 rounded-xl outline-none
                  focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
-          <option value="custom" disabled={selectedEV !== 'custom'}>{T.evCustom}</option>
           {#each EV_PRESETS as preset}
             <option value={preset.label}>{preset.label} — {preset.capacity} kWh</option>
           {/each}
+          <option value="custom">{T.evCustom}</option>
         </select>
         <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,6 +96,8 @@
 
     <div class="flex flex-col gap-5">
 
+    <!-- Kapasitas Baterai EV — hanya tampil jika Custom -->
+    {#if selectedEV === 'custom'}
       <div class="flex flex-col gap-1">
         <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.batteryCapacityLabel}</label>
         <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
@@ -97,6 +109,7 @@
         </div>
         {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
       </div>
+    {/if}
 
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
@@ -175,10 +188,10 @@
           class="w-full appearance-none px-4 py-2.5 pr-10 text-sm text-slate-700 bg-slate-50
                  border border-slate-200 rounded-xl outline-none
                  focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-colors">
-          <option value="custom" disabled={selectedCharger !== 'custom'}>✏️ Custom</option>
           {#each CHARGER_PRESETS as preset}
             <option value={preset.label}>{preset.label}</option>
           {/each}
+          <option value="custom">{T.evCustom}</option>
         </select>
         <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,20 +201,23 @@
       </div>
     </div>
 
+    <!-- Daya Charger — hanya tampil jika Custom -->
+    {#if selectedCharger === 'custom'}
     <div class="flex flex-col gap-1">
       <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargerPowerLabel}</label>
       <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
         <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
-  on:input={() => {
-    const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
-    selectedCharger = preset ? preset.label : 'custom';
-  }}
-  on:blur={() => onBlur('chargerPower', 0.1, 9999)}
-  class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
+          on:input={() => {
+            const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
+            selectedCharger = preset ? preset.label : 'custom';
+          }}
+          on:blur={() => onBlur('chargerPower', 0.1, 9999)}
+          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
         <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kW</span>
       </div>
       {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
     </div>
+    {/if}
 
     <!-- Efisiensi Pengisian -->
     <div class="flex flex-col gap-2">
