@@ -1,4 +1,4 @@
-# EV Charging Calculator ⚡
+# Chargist ⚡
 
 Kalkulator pengisian daya kendaraan listrik (EV) yang dirancang khusus untuk pasar Indonesia. Aplikasi ini membantu pengguna menghitung konsumsi energi, biaya pengisian daya, dan efisiensi pengisian dengan mempertimbangkan tarif listrik PLN dan spesifikasi kendaraan listrik lokal.
 

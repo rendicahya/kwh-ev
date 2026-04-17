@@ -1,7 +1,7 @@
 export const translations = {
   id: {
     // Header
-    appTitle: 'EV Charging Calculator',
+    appTitle: 'Chargist',
     appSubtitle: 'Hitung biaya & waktu pengisian daya',
 
     // Shared Inputs
@@ -112,7 +112,7 @@ export const translations = {
 
   en: {
     // Header
-    appTitle: 'EV Charging Calculator',
+    appTitle: 'Chargist',
     appSubtitle: 'Calculate charging cost & time',
 
     // Shared Inputs
