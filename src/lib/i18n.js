@@ -107,6 +107,16 @@ export const translations = {
     // Misc
     progressBarLabel: 'Segmen berwarna = energi yang akan diisi',
 
+    rangeBeforeLabel: 'Sebelum Pengisian',
+    rangeAfterLabel: 'Setelah Pengisian',
+    rangeGainedLabel: 'Penambahan Range',
+    bbmCompareTitle: 'Perbandingan dengan BBM',
+    bbmEfficiency: '(asumsi 12 km/liter)',
+    bbmPertalite: 'Pertalite',
+    bbmPertamax: 'Pertamax',
+    evSaves: (amount) => `EV hemat ${amount}`,
+    bbmSaves: (amount) => `BBM hemat ${amount}`,
+
     footer: 'Dibuat dengan ❤️ untuk komunitas EV Indonesia',
   },
 
@@ -217,6 +227,16 @@ export const translations = {
 
     // Misc
     progressBarLabel: 'Colored segment = energy to be charged',
+
+    rangeBeforeLabel: 'Before Charging',
+    rangeAfterLabel: 'After Charging',
+    rangeGainedLabel: 'Range Gained',
+    bbmCompareTitle: 'Compared to Gasoline',
+    bbmEfficiency: '(assumes 12 km/liter)',
+    bbmPertalite: 'Pertalite',
+    bbmPertamax: 'Pertamax',
+    evSaves: (amount) => `EV saves ${amount}`,
+    bbmSaves: (amount) => `Gas saves ${amount}`,
 
     footer: 'Made with ❤️ for the Indonesian EV community',
   },

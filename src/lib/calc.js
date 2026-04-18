@@ -1,3 +1,5 @@
+import { BBM_EFFICIENCY, BBM_PRICES } from './constants.js';
+
 export function formatRupiah(val) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency', currency: 'IDR', minimumFractionDigits: 2,
@@ -61,4 +63,13 @@ export function calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity
 
 export function calcRange(fullRange, batteryPercent) {
   return Math.round(fullRange * batteryPercent / 100);
+}
+
+export function calcBBMCost(distanceKm) {
+  const litersNeeded = distanceKm / BBM_EFFICIENCY;
+  return {
+    pertalite: litersNeeded * BBM_PRICES.pertalite,
+    pertamax: litersNeeded * BBM_PRICES.pertamax,
+    liters: litersNeeded,
+  };
 }

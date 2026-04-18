@@ -4,6 +4,7 @@
   import { calcTime, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
   import { createEventDispatcher } from 'svelte';
+  import RangeAndBBMInfo from './RangeAndBBMInfo.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
@@ -126,6 +127,13 @@
             <p class="text-xs text-slate-400 mt-0.5">{T.basedOnBattery(result.finalBattery.toFixed(1))}</p>
           </div>
         </div>
+
+          <RangeAndBBMInfo
+            {T} {evPreset}
+            batteryStart={currentBattery}
+            batteryEnd={result.finalBattery}
+            totalCost={result.totalCost}
+          />
       {:else}
         <div></div>
       {/if}

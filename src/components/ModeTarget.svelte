@@ -4,6 +4,7 @@
   import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
   import { createEventDispatcher } from 'svelte';
+  import RangeAndBBMInfo from './RangeAndBBMInfo.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -108,19 +109,25 @@
       </div>
 
       {#if evPreset}
-        <div class="flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-4 py-4">
-          <div class="bg-violet-100 text-violet-600 rounded-lg p-2">
+        <!-- Baris 2: Waktu Pengisian + (kosong atau diisi komponen di bawah) -->
+        <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
+          <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
           <div>
-            <p class="text-xs text-slate-500 font-medium">{T.estimatedRange} <span class="text-slate-400 font-normal">({evPreset.standard})</span></p>
-            <p class="text-xl font-bold text-slate-800">~{rangeGained} <span class="text-sm font-normal text-slate-500">km</span></p>
-            <p class="text-xs text-slate-400 mt-0.5">{T.basedOnBattery(targetBattery)}</p>
+            <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
+            <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
           </div>
         </div>
+
+        <RangeAndBBMInfo
+          {T} {evPreset}
+          batteryStart={currentBattery}
+          batteryEnd={targetBattery}
+          totalCost={result.totalCost}
+        />
       {:else}
         <!-- Placeholder kosong agar baris tetap rapi jika tidak ada preset -->
         <div></div>

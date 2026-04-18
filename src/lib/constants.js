@@ -79,3 +79,10 @@ export const HOME_TARIFFS = [
   { label: '3.500–5.500 VA', tariff: 1699.53 },
   { label: '>6.600 VA', tariff: 1699.53 },
 ];
+
+export const BBM_EFFICIENCY = 12;  // km/liter (rata-rata)
+
+export const BBM_PRICES = {
+  pertalite: 10000,
+  pertamax: 12300,
+};
