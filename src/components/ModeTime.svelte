@@ -8,6 +8,7 @@
   import BBMCompare from './BBMCompare.svelte';
   import EnergyInfo from './EnergyInfo.svelte';
   import CostBreakdown from './CostBreakdown.svelte';
+  import BatteryFinalBox from './BatteryFinalBox.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
@@ -72,7 +73,6 @@
 {#if showResult}
   <div class="space-y-3 pt-2 border-t border-slate-100">
 
-    <!-- Baris 1: Energi dari PLN + Energi ke Baterai -->
     <EnergyInfo
       {T}
       energyFromGrid={result.energyFromGrid}
@@ -80,7 +80,8 @@
       {efficiency}
     />
 
-    <!-- Baris 2: Baterai Akhir + Estimasi Jarak -->
+    <BatteryFinalBox {T} finalBattery={result.finalBattery} />
+
     <RangeInfo
       {T} {evPreset}
       batteryStart={currentBattery}
