@@ -116,6 +116,8 @@ export const translations = {
     bbmPertamax: 'Pertamax',
     evSaves: (amount) => `EV hemat ${amount}`,
     bbmSaves: (amount) => `BBM hemat ${amount}`,
+    bbmEfficiencyValue: '12',
+    energyLabel: 'Energi',
 
     footer: 'Dibuat dengan ❤️ untuk komunitas EV Indonesia',
   },
@@ -237,6 +239,8 @@ export const translations = {
     bbmPertamax: 'Pertamax',
     evSaves: (amount) => `EV saves ${amount}`,
     bbmSaves: (amount) => `Gas saves ${amount}`,
+    bbmEfficiencyValue: '12',
+    energyLabel: 'Energy',
 
     footer: 'Made with ❤️ for the Indonesian EV community',
   },

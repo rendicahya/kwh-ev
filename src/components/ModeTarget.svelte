@@ -1,10 +1,12 @@
 <script>
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
-  import { calcTarget, calcRange, formatRupiah } from '../lib/calc.js';
+  import { calcTarget, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
   import { createEventDispatcher } from 'svelte';
-  import RangeAndBBMInfo from './RangeAndBBMInfo.svelte';
+  import RangeInfo from './RangeInfo.svelte';
+  import BBMCompare from './BBMCompare.svelte';
+  import EnergyInfo from './EnergyInfo.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -19,7 +21,6 @@
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
   $: evPreset = selectedEV !== 'custom' ? EV_PRESETS.find(p => p.label === selectedEV) : null;
-  $: rangeGained = evPreset ? calcRange(evPreset.range, targetBattery) : null;
 
   $: timeLabel = (() => {
     const h = result.chargingHours > 0 ? `${result.chargingHours} ${T.jamUnit}` : '';
@@ -31,6 +32,7 @@
     dispatch('result', {
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
+      batteryEnd: targetBattery,
     });
   }
 </script>
@@ -67,71 +69,30 @@
   <div class="space-y-3 pt-2 border-t border-slate-100">
 
     <!-- Baris 1: Energi dari PLN + Energi ke Baterai -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-4">
-        <div class="bg-emerald-100 text-emerald-600 rounded-lg p-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 font-medium">{T.energyFromGrid}</p>
-          <p class="text-xl font-bold text-slate-800">{result.energyFromGrid.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
-        </div>
-      </div>
+    <EnergyInfo
+      {T}
+      energyFromGrid={result.energyFromGrid}
+      energyToBattery={result.energyNeeded}
+      {efficiency}
+    />
 
-      <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-4">
-        <div class="bg-slate-200 text-slate-600 rounded-lg p-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 7h10a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9a2 2 0 012-2zm-4 4h2m10-4V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2"/>
-          </svg>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 font-medium">{T.energyToBattery}</p>
-          <p class="text-xl font-bold text-slate-800">{result.energyNeeded.toFixed(2)} <span class="text-sm font-normal text-slate-500">kWh</span></p>
-        </div>
-      </div>
-    </div>
+    <RangeInfo
+      {T} {evPreset}
+      batteryStart={currentBattery}
+      batteryEnd={targetBattery}
+    />
 
     <!-- Baris 2: Waktu Pengisian + Estimasi Jarak (jika ada preset) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
-        <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
-          <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
-        </div>
+    <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
+      <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
-
-      {#if evPreset}
-        <!-- Baris 2: Waktu Pengisian + (kosong atau diisi komponen di bawah) -->
-        <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
-          <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div>
-            <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
-            <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
-          </div>
-        </div>
-
-        <RangeAndBBMInfo
-          {T} {evPreset}
-          batteryStart={currentBattery}
-          batteryEnd={targetBattery}
-          totalCost={result.totalCost}
-        />
-      {:else}
-        <!-- Placeholder kosong agar baris tetap rapi jika tidak ada preset -->
-        <div></div>
-      {/if}
+      <div>
+        <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
+        <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
+      </div>
     </div>
 
     <!-- Rincian Biaya -->
@@ -152,6 +113,13 @@
         <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.totalCost)}</span>
       </div>
     </div>
+
+    <BBMCompare
+      {T} {evPreset}
+      batteryStart={currentBattery}
+      batteryEnd={targetBattery}
+      totalCost={result.totalCost}
+    />
 
   </div>
 {/if}
