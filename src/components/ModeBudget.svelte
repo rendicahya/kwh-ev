@@ -10,6 +10,7 @@
   import EnergyInfo from './EnergyInfo.svelte';
   import CostBreakdown from './CostBreakdown.svelte';
   import BatteryFinalBox from './BatteryFinalBox.svelte';
+  import ChargingTimeBox from './ChargingTimeBox.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let budget;
@@ -85,18 +86,7 @@
 
     <BatteryFinalBox {T} finalBattery={result.finalBattery} />
 
-    <!-- Waktu Pengisian -->
-    <div class="flex items-center gap-3 bg-amber-50 border border-amber-100 rounded-xl px-4 py-4">
-      <div class="bg-amber-100 text-amber-600 rounded-lg p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-xs text-slate-500 font-medium">{T.chargingTimeLabel}</p>
-        <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
-      </div>
-    </div>
+    <ChargingTimeBox {T} {timeLabel} />
 
     <CostBreakdown
       {T}

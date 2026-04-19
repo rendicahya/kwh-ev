@@ -8,6 +8,7 @@
   import BBMCompare from './BBMCompare.svelte';
   import EnergyInfo from './EnergyInfo.svelte';
   import CostBreakdown from './CostBreakdown.svelte';
+  import ChargingTimeBox from './ChargingTimeBox.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -83,18 +84,7 @@
       batteryEnd={targetBattery}
     />
 
-    <!-- Baris 2: Waktu Pengisian + Estimasi Jarak (jika ada preset) -->
-    <div class="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-4">
-      <div class="bg-blue-100 text-blue-600 rounded-lg p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <div>
-        <p class="text-xs text-slate-500 font-medium">{T.chargingTime}</p>
-        <p class="text-xl font-bold text-slate-800">{timeLabel}</p>
-      </div>
-    </div>
+    <ChargingTimeBox {T} {timeLabel} />
 
     <CostBreakdown
       {T}
