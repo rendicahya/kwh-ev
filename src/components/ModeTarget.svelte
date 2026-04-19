@@ -1,8 +1,7 @@
 <script>
   import ProgressBar from './ProgressBar.svelte';
-  import { calcTarget, formatRupiah } from '../lib/calc.js';
+  import { calcTarget } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
-  import { createEventDispatcher } from 'svelte';
   import RangeInfo from './RangeInfo.svelte';
   import BBMCompare from './BBMCompare.svelte';
   import EnergyInfo from './EnergyInfo.svelte';
@@ -17,8 +16,7 @@
   export let selectedEV = 'custom';
   export let efficiency;
   export let T;
-
-  const dispatch = createEventDispatcher();
+  export let onResult = null;
 
   $: result = calcTarget({ batteryCapacity, currentBattery, targetBattery, chargerPower, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !targetBatteryError && result.energyNeeded > 0;
@@ -30,8 +28,8 @@
     return (h + m).trim() || '< 1 menit';
   })();
 
-  $: if (showResult && result) {
-    dispatch('result', {
+  $: if (showResult && result && onResult) {
+    onResult('result', {
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
       batteryEnd: targetBattery,
@@ -55,7 +53,6 @@
 {#if showResult}
   <div class="space-y-3 pt-2 border-t border-slate-100">
 
-    <!-- Baris 1: Energi dari PLN + Energi ke Baterai -->
     <EnergyInfo
       {T}
       energyFromGrid={result.energyFromGrid}

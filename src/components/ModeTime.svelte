@@ -1,9 +1,8 @@
 <script>
   import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
-  import { calcTime, formatRupiah } from '../lib/calc.js';
+  import { calcTime } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
-  import { createEventDispatcher } from 'svelte';
   import RangeInfo from './RangeInfo.svelte';
   import BBMCompare from './BBMCompare.svelte';
   import EnergyInfo from './EnergyInfo.svelte';
@@ -19,8 +18,7 @@
   export let selectedEV = 'custom';
   export let efficiency;
   export let T;
-
-  const dispatch = createEventDispatcher();
+  export let onResult = null;
 
   $: result = calcTime({ batteryCapacity, currentBattery, chargerPower, availableHours, availableMinutes, tariffPerKwh, pbjt_rate, efficiency });
   $: showResult = sharedValid && !timeError && !availableHoursError && !availableMinutesError && (availableHours > 0 || availableMinutes > 0);
@@ -35,8 +33,8 @@
   $: chargeComplete = result && (result.actualHours < availableHours ||
     (result.actualHours === availableHours && result.actualMinutes < availableMinutes));
 
-  $: if (showResult && result) {
-    dispatch('result', {
+  $: if (showResult && result && onResult) {
+    onResult('result', {
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
       batteryEnd: result.finalBattery,

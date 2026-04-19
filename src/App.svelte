@@ -154,7 +154,7 @@
             {selectedEV}
             {efficiency}
             {T}
-            on:result={onModeResult}
+            onResult={onModeResult}
           />
         {:else if activeTab === 'time'}
           <ModeTime
@@ -166,7 +166,7 @@
             {sharedValid}
             pbjt_rate={activePBJTRate}
             {T}
-            on:result={onModeResult}
+            onResult={onModeResult}
           />
         {:else if activeTab === 'budget'}
           <ModeBudget
@@ -175,7 +175,7 @@
             {sharedValid}
             pbjt_rate={activePBJTRate}
             {T}
-            on:result={onModeResult}
+            onResult={onModeResult}
           />
         {:else if activeTab === 'history'}
           <HistoryTab {T} />
