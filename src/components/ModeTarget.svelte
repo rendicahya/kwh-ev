@@ -1,5 +1,4 @@
 <script>
-  import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import { calcTarget, formatRupiah } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
@@ -9,6 +8,7 @@
   import EnergyInfo from './EnergyInfo.svelte';
   import CostBreakdown from './CostBreakdown.svelte';
   import ChargingTimeBox from './ChargingTimeBox.svelte';
+  import SliderInput from './SliderInput.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -39,31 +39,16 @@
   }
 </script>
 
-<!-- Slider Baterai Target -->
-<div class="flex flex-col gap-2">
-  <div class="flex items-center justify-between">
-    <label for="targetBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.targetBatteryLabel}</label>
-    <span class="text-sm font-bold {targetBattery > 80 ? 'text-amber-500' : 'text-emerald-600'}">{targetBattery}%</span>
-  </div>
-  <input id="targetBattery" type="range" bind:value={targetBattery} min="0" max="100" step="1"
-    on:blur={() => targetBattery = clamp(targetBattery, 0, 100)}
-    class="w-full h-2 rounded-full appearance-none cursor-pointer
-           bg-slate-200 accent-emerald-500" />
-  <div class="flex justify-between text-xs text-slate-400">
-    <span>0%</span>
-    <span>50%</span>
-    <span>100%</span>
-  </div>
-  {#if targetBattery > 80}
-    <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-      </svg>
-      <p class="text-xs text-amber-700">{T.warningOver80}</p>
-    </div>
-  {/if}
-  {#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
-</div>
+<SliderInput
+  id="targetBattery"
+  label={T.targetBatteryLabel}
+  bind:value={targetBattery}
+  min={0} max={100} unit="%"
+  tickMin="0%" tickMid="50%" tickMax="100%"
+  warning={T.warningOver80}
+  warningThreshold={80}
+/>
+{#if targetBatteryError}<p class="text-xs text-red-500 mt-0.5">{targetBatteryError}</p>{/if}
 
 <ProgressBar mode="target" {currentBattery} {targetBattery} {T} />
 

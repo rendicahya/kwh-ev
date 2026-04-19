@@ -11,6 +11,7 @@
   import CostBreakdown from './CostBreakdown.svelte';
   import BatteryFinalBox from './BatteryFinalBox.svelte';
   import ChargingTimeBox from './ChargingTimeBox.svelte';
+  import NumberInput from './NumberInput.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let budget;
@@ -41,20 +42,17 @@
   }
 </script>
 
-<div class="flex flex-col gap-1">
-  <label for="budget" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.budgetLabel}</label>
-  <div class="flex items-center border {budgetError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-    <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-r border-slate-200">Rp</span>
-    <input id="budget" type="number" bind:value={budget} min="0" step="1000"
-      on:blur={() => budget = clamp(budget, 0, 99999999)}
-      class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-  </div>
-  {#if budgetError}
-    <p class="text-xs text-red-500 mt-0.5">{budgetError}</p>
-  {:else if pbjt_rate > 0}
-    <p class="text-xs text-slate-400 mt-0.5">{T.budgetPbjtInfo}</p>
-  {/if}
-</div>
+<NumberInput
+  id="budget"
+  label={T.budgetLabel}
+  bind:value={budget}
+  min={0} step={1000} prefix="Rp"
+  error={budgetError}
+  on:blur={() => budget = clamp(budget, 0, 99999999)}
+/>
+{#if !budgetError && pbjt_rate > 0}
+  <p class="text-xs text-slate-400 -mt-1">{T.budgetPbjtInfo}</p>
+{/if}
 
 {#if result}
   <ProgressBar

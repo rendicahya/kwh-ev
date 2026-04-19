@@ -9,6 +9,7 @@
   import EnergyInfo from './EnergyInfo.svelte';
   import CostBreakdown from './CostBreakdown.svelte';
   import BatteryFinalBox from './BatteryFinalBox.svelte';
+  import NumberInput from './NumberInput.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let availableHours, availableMinutes;
@@ -44,26 +45,24 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <label for="availableHours" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargingTimeLabel}</label>
+  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargingTimeLabel}</p>
   <div class="flex gap-3">
-    <div class="flex-1 flex flex-col gap-1">
-      <div class="flex items-center border {availableHoursError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-        <input id="availableHours" type="number" bind:value={availableHours} min="0" max="24"
-          on:blur={() => availableHours = clamp(availableHours, 0, 24)}
-          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">{T.jamUnit}</span>
-      </div>
-      {#if availableHoursError}<p class="text-xs text-red-500 mt-0.5">{availableHoursError}</p>{/if}
-    </div>
-    <div class="flex-1 flex flex-col gap-1">
-      <div class="flex items-center border {availableMinutesError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-        <input id="availableMinutes" type="number" bind:value={availableMinutes} min="0" max="59"
-          on:blur={() => availableMinutes = clamp(availableMinutes, 0, 59)}
-          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">{T.menitUnit}</span>
-      </div>
-      {#if availableMinutesError}<p class="text-xs text-red-500 mt-0.5">{availableMinutesError}</p>{/if}
-    </div>
+    <NumberInput
+      id="availableHours"
+      label=""
+      bind:value={availableHours}
+      min={0} max={24} unit={T.jamUnit}
+      error={availableHoursError}
+      on:blur={() => availableHours = clamp(availableHours, 0, 24)}
+    />
+    <NumberInput
+      id="availableMinutes"
+      label=""
+      bind:value={availableMinutes}
+      min={0} max={59} unit={T.menitUnit}
+      error={availableMinutesError}
+      on:blur={() => availableMinutes = clamp(availableMinutes, 0, 59)}
+    />
   </div>
   {#if timeError}<p class="text-xs text-red-500 mt-0.5">{timeError}</p>{/if}
 </div>

@@ -2,6 +2,8 @@
   import { clamp } from '../lib/validation.js';
   import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF } from '../lib/constants.js';
   import { persisted, persist } from '../lib/persist.js';
+  import SliderInput from './SliderInput.svelte';
+  import NumberInput from './NumberInput.svelte';
 
   export let batteryCapacity, currentBattery, tariffPerKwh, chargerPower;
   export let batteryCapacityError, chargerPowerError, currentBatteryError;
@@ -96,36 +98,27 @@
 
     <div class="flex flex-col gap-5">
 
-    <!-- Kapasitas Baterai EV — hanya tampil jika Custom -->
-    {#if selectedEV === 'custom'}
-      <div class="flex flex-col gap-1">
-        <label for="batteryCapacity" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.batteryCapacityLabel}</label>
-        <div class="flex items-center border {batteryCapacityError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-          <input id="batteryCapacity" type="number" bind:value={batteryCapacity} min="0.1"
-            on:input={() => selectedEV = 'custom'}
-            on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
-            class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-          <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kWh</span>
-        </div>
-        {#if batteryCapacityError}<p class="text-xs text-red-500 mt-0.5">{batteryCapacityError}</p>{/if}
-      </div>
-    {/if}
+      <!-- Kapasitas Baterai EV — hanya tampil jika Custom -->
+      {#if selectedEV === 'custom'}
+        <NumberInput
+          id="batteryCapacity"
+          label={T.batteryCapacityLabel}
+          bind:value={batteryCapacity}
+          min={0.1} step={0.1} unit="kWh"
+          error={batteryCapacityError}
+          on:input={() => selectedEV = 'custom'}
+          on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
+        />
+      {/if}
 
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <label for="currentBattery" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.currentBatteryLabel}</label>
-          <span class="text-sm font-bold text-emerald-600">{currentBattery}%</span>
-        </div>
-        <input id="currentBattery" type="range" bind:value={currentBattery} min="0" max="100" step="1"
-          class="w-full h-2 rounded-full appearance-none cursor-pointer
-                 bg-slate-200 accent-emerald-500" />
-        <div class="flex justify-between text-xs text-slate-400">
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
-        </div>
-        {#if currentBatteryError}<p class="text-xs text-red-500 mt-0.5">{currentBatteryError}</p>{/if}
-      </div>
+      <SliderInput
+        id="currentBattery"
+        label={T.currentBatteryLabel}
+        bind:value={currentBattery}
+        min={0} max={100} unit="%"
+        tickMin="0%" tickMid="50%" tickMax="100%"
+        error={currentBatteryError}
+      />
 
     </div>
 
@@ -203,35 +196,28 @@
 
     <!-- Daya Charger — hanya tampil jika Custom -->
     {#if selectedCharger === 'custom'}
-    <div class="flex flex-col gap-1">
-      <label for="chargerPower" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.chargerPowerLabel}</label>
-      <div class="flex items-center border {chargerPowerError ? 'border-red-300' : 'border-slate-200'} rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-400 bg-slate-50">
-        <input id="chargerPower" type="number" bind:value={chargerPower} min="0.1" step="0.1"
-          on:input={() => {
-            const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
-            selectedCharger = preset ? preset.label : 'custom';
-          }}
-          on:blur={() => onBlur('chargerPower', 0.1, 9999)}
-          class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
-        <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">kW</span>
-      </div>
-      {#if chargerPowerError}<p class="text-xs text-red-500 mt-0.5">{chargerPowerError}</p>{/if}
-    </div>
+      <NumberInput
+        id="chargerPower"
+        label={T.chargerPowerLabel}
+        bind:value={chargerPower}
+        min={0.1} step={0.1} unit="kW"
+        error={chargerPowerError}
+        on:input={() => {
+          const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
+          selectedCharger = preset ? preset.label : 'custom';
+        }}
+        on:blur={() => onBlur('chargerPower', 0.1, 9999)}
+      />
     {/if}
 
-    <!-- Efisiensi Pengisian -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between">
-        <label for="efficiency" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.efficiencyLabel}</label>
-        <span class="text-sm font-bold text-emerald-600">{Math.round(efficiency * 100)}%</span>
-      </div>
-      <input id="efficiency" type="range" bind:value={efficiency} min="0.85" max="0.95" step="0.01"
-      class="w-full h-2 rounded-full appearance-none cursor-pointer
-      bg-slate-200 accent-emerald-500" />
-      <div class="flex justify-between text-xs text-slate-400">
-        <span>{T.efficiencyConservative}</span>
-        <span>{T.efficiencyOptimal}</span>
-      </div>
-    </div>
+    <SliderInput
+      id="efficiency"
+      label={T.efficiencyLabel}
+      bind:value={efficiency}
+      min={0.85} max={0.95} step={0.01}
+      displayValue="{Math.round(efficiency * 100)}%"
+      tickMin={T.efficiencyConservative}
+      tickMax={T.efficiencyOptimal}
+    />
   </div>
 </div>
