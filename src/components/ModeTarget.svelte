@@ -7,6 +7,7 @@
   import RangeInfo from './RangeInfo.svelte';
   import BBMCompare from './BBMCompare.svelte';
   import EnergyInfo from './EnergyInfo.svelte';
+  import CostBreakdown from './CostBreakdown.svelte';
 
   export let batteryCapacity, currentBattery, chargerPower, tariffPerKwh;
   export let targetBattery, targetBatteryError;
@@ -95,24 +96,15 @@
       </div>
     </div>
 
-    <!-- Rincian Biaya -->
-    <div class="bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 space-y-3">
-      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">{T.costBreakdown}</p>
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">{T.energyCostLabel} ({result.energyFromGrid.toFixed(2)} kWh × {formatRupiah(tariffPerKwh)})</span>
-        <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.energyCost)}</span>
-      </div>
-      {#if pbjt_rate > 0}
-      <div class="flex justify-between items-center">
-        <span class="text-sm text-slate-600">{T.pbjtLabel} <em>({T.pbjtDesc})</em></span>
-        <span class="text-sm font-semibold text-slate-700">{formatRupiah(result.pbjt)}</span>
-      </div>
-      {/if}
-      <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span class="text-sm font-bold text-slate-800">{T.totalCostLabel}</span>
-        <span class="text-xl font-extrabold text-emerald-600">{formatRupiah(result.totalCost)}</span>
-      </div>
-    </div>
+    <CostBreakdown
+      {T}
+      energyFromGrid={result.energyFromGrid}
+      {tariffPerKwh}
+      energyCost={result.energyCost}
+      pbjt={result.pbjt}
+      {pbjt_rate}
+      totalCost={result.totalCost}
+    />
 
     <BBMCompare
       {T} {evPreset}
