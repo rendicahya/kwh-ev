@@ -25,7 +25,7 @@
 
   $: timeLabel = result
     ? ((result.actualHours > 0 ? `${result.actualHours} ${T.jamUnit}` : '') +
-      (result.actualMinutes > 0 ? ` ${result.actualMinutes} ${T.menitUnit}` : '')).trim() || '< 1 menit'
+      (result.actualMinutes > 0 ? ` ${result.actualMinutes} ${T.menitUnit}` : '')).trim() || T.lessThanOneMinute
     : '';
 
   // Apakah pengisian selesai sebelum waktu tersedia habis

@@ -25,7 +25,7 @@
   $: timeLabel = (() => {
     const h = result.chargingHours > 0 ? `${result.chargingHours} ${T.jamUnit}` : '';
     const m = result.chargingMinutes > 0 ? ` ${result.chargingMinutes} ${T.menitUnit}` : '';
-    return (h + m).trim() || '< 1 menit';
+    return (h + m).trim() || T.lessThanOneMinute;
   })();
 
   $: if (showResult && result && onResult) {

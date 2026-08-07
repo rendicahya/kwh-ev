@@ -78,6 +78,7 @@ export const translations = {
     chargingTimeLabel: 'Waktu Pengisian',
     jamUnit: 'jam',
     menitUnit: 'menit',
+    lessThanOneMinute: '< 1 menit',
     batteryFinal: 'Baterai Akhir',
     chargeCompleteMsg: (time) => `Baterai akan penuh dalam ${time}, lebih cepat dari waktu yang tersedia.`,
 
@@ -201,6 +202,7 @@ export const translations = {
     chargingTimeLabel: 'Charging Time',
     jamUnit: 'hr',
     menitUnit: 'min',
+    lessThanOneMinute: '< 1 min',
     batteryFinal: 'Final Battery',
     chargeCompleteMsg: (time) => `Battery will be full in ${time}, faster than the available time.`,
 
