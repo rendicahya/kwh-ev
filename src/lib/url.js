@@ -1,3 +1,8 @@
+const NUMERIC_KEYS = [
+  'batteryCapacity', 'currentBattery', 'chargerPower', 'targetBattery',
+  'availableHours', 'availableMinutes', 'budget', 'efficiency',
+];
+
 const PARAM_KEYS = {
   tab: 'tab',
   location: 'loc',
@@ -35,10 +40,10 @@ export function urlToState(defaults) {
   for (const [param, value] of params.entries()) {
     const key = reverseKeys[param];
     if (!key) continue;
-    // Parse angka
-    if (['batteryCapacity', 'currentBattery', 'chargerPower', 'targetBattery',
-         'availableHours', 'availableMinutes', 'budget', 'efficiency'].includes(key)) {
-      state[key] = parseFloat(value);
+    // Parse angka; abaikan nilai yang tidak valid supaya jatuh ke default
+    if (NUMERIC_KEYS.includes(key)) {
+      const parsed = parseFloat(value);
+      if (Number.isFinite(parsed)) state[key] = parsed;
     } else {
       state[key] = value;
     }

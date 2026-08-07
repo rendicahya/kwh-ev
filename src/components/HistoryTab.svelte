@@ -116,21 +116,21 @@
               <!-- Edit mode -->
               <div class="space-y-3">
                 <div class="flex flex-col gap-1">
-                  <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.evModelNameLabel}</label>
-                  <input type="text" bind:value={editEvModel}
+                  <label for="historyEditEvModel" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.evModelNameLabel}</label>
+                  <input id="historyEditEvModel" type="text" bind:value={editEvModel}
                     class="px-3 py-2 text-sm text-slate-800 bg-slate-50 border border-slate-200
                            rounded-xl outline-none focus:ring-2 focus:ring-emerald-400" />
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                   <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.sessionDate}</label>
-                    <input type="date" bind:value={editDate}
+                    <label for="historyEditDate" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.sessionDate}</label>
+                    <input id="historyEditDate" type="date" bind:value={editDate}
                       class="px-3 py-2 text-sm text-slate-800 bg-slate-50 border border-slate-200
                              rounded-xl outline-none focus:ring-2 focus:ring-emerald-400" />
                   </div>
                   <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.sessionTime}</label>
-                    <input type="time" bind:value={editTime}
+                    <label for="historyEditTime" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{T.sessionTime}</label>
+                    <input id="historyEditTime" type="time" bind:value={editTime}
                       class="px-3 py-2 text-sm text-slate-800 bg-slate-50 border border-slate-200
                              rounded-xl outline-none focus:ring-2 focus:ring-emerald-400" />
                   </div>

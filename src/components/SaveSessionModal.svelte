@@ -33,12 +33,16 @@
   }
 </script>
 
+<svelte:window on:keydown={(e) => { if (e.key === 'Escape') onClose(); }} />
+
 <!-- Overlay -->
 <div class="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4"
+  role="presentation"
   on:click|self={onClose}>
 
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
-    <h3 class="text-base font-bold text-slate-800">{T.saveSessionTitle}</h3>
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4"
+    role="dialog" aria-modal="true" aria-labelledby="saveSessionTitle">
+    <h3 id="saveSessionTitle" class="text-base font-bold text-slate-800">{T.saveSessionTitle}</h3>
 
     <!-- Summary readonly -->
     <div class="bg-slate-50 rounded-xl px-4 py-3 space-y-2 text-sm">
