@@ -1,4 +1,6 @@
 <script>
+  import { clamp } from '../lib/validation.js';
+
   export let id;
   export let label;
   export let value;
@@ -8,6 +10,10 @@
   export let unit = '';        // suffix kanan, misal "kWh", "kW", "%"
   export let prefix = '';      // prefix kiri, misal "Rp"
   export let error = '';
+
+  function handleBlur() {
+    value = max !== undefined ? clamp(value, min, max) : Math.max(value, min);
+  }
 </script>
 
 <div class="flex flex-col gap-1">
@@ -19,7 +25,7 @@
     {#if prefix}
       <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-r border-slate-200">{prefix}</span>
     {/if}
-    <input {id} type="number" bind:value {min} {max} {step}
+    <input {id} type="number" bind:value {min} {max} {step} on:input on:blur={handleBlur}
       class="flex-1 px-3 py-2.5 text-slate-800 bg-transparent outline-none text-sm" />
     {#if unit}
       <span class="px-3 text-xs text-slate-400 font-medium bg-slate-100 h-full flex items-center border-l border-slate-200">{unit}</span>

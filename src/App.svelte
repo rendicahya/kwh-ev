@@ -80,8 +80,8 @@
 
   $: modeTitle = tabs.find(t => t.id === activeTab)?.label ?? '';
 
-  function onModeResult(e) {
-    sessionResult = e.detail;
+  function onModeResult(data) {
+    sessionResult = data;
   }
 
   function onTabChange(tabId) {

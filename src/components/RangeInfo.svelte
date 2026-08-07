@@ -1,11 +1,13 @@
 <script>
+  import { calcRange } from '../lib/calc.js';
+
   export let T;
   export let evPreset;
   export let batteryStart;
   export let batteryEnd;
 
-  $: rangeBefore = evPreset ? Math.round(evPreset.range * batteryStart / 100) : null;
-  $: rangeAfter  = evPreset ? Math.round(evPreset.range * batteryEnd  / 100) : null;
+  $: rangeBefore = evPreset ? calcRange(evPreset.range, batteryStart) : null;
+  $: rangeAfter  = evPreset ? calcRange(evPreset.range, batteryEnd) : null;
   $: rangeGained = (rangeBefore !== null && rangeAfter !== null) ? rangeAfter - rangeBefore : null;
 </script>
 

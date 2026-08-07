@@ -1,5 +1,4 @@
 <script>
-  import { clamp } from '../lib/validation.js';
   import { EV_PRESETS, CHARGER_PRESETS, HOME_TARIFFS, SPKLU_TARIFF } from '../lib/constants.js';
   import { persisted, persist } from '../lib/persist.js';
   import SliderInput from './SliderInput.svelte';
@@ -61,12 +60,6 @@
     }
   }
 
-  function onBlur(field, min, max) {
-    if (field === 'batteryCapacity')  batteryCapacity  = clamp(batteryCapacity, min, max);
-    if (field === 'chargerPower')     chargerPower     = clamp(chargerPower, min, max);
-    if (field === 'currentBattery')   currentBattery   = clamp(currentBattery, min, max);
-    if (field === 'tariffPerKwh')     tariffPerKwh     = clamp(tariffPerKwh, min, max);
-  }
 </script>
 
 <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
@@ -104,10 +97,9 @@
           id="batteryCapacity"
           label={T.batteryCapacityLabel}
           bind:value={batteryCapacity}
-          min={0.1} step={0.1} unit="kWh"
+          min={0.1} max={9999} step={0.1} unit="kWh"
           error={batteryCapacityError}
           on:input={() => selectedEV = 'custom'}
-          on:blur={() => onBlur('batteryCapacity', 0.1, 9999)}
         />
       {/if}
 
@@ -200,13 +192,12 @@
         id="chargerPower"
         label={T.chargerPowerLabel}
         bind:value={chargerPower}
-        min={0.1} step={0.1} unit="kW"
+        min={0.1} max={9999} step={0.1} unit="kW"
         error={chargerPowerError}
         on:input={() => {
           const preset = CHARGER_PRESETS.find(p => p.power === chargerPower);
           selectedCharger = preset ? preset.label : 'custom';
         }}
-        on:blur={() => onBlur('chargerPower', 0.1, 9999)}
       />
     {/if}
 

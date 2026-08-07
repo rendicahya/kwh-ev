@@ -29,7 +29,7 @@
   })();
 
   $: if (showResult && result && onResult) {
-    onResult('result', {
+    onResult({
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
       batteryEnd: targetBattery,

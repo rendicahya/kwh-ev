@@ -1,5 +1,4 @@
 <script>
-  import { clamp } from '../lib/validation.js';
   import { validateBudget } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import { calcBudget } from '../lib/calc.js';
@@ -21,7 +20,7 @@
   export let T;
   export let onResult = null;
 
-  $: budgetError = validateBudget({ budget });
+  $: budgetError = validateBudget({ budget }, T);
   $: result = !budgetError ? calcBudget({ budget, tariffPerKwh, chargerPower, batteryCapacity, currentBattery, pbjt_rate, efficiency }) : null;
   $: evPreset = selectedEV !== 'custom' ? EV_PRESETS.find(p => p.label === selectedEV) : null;
   $: showResult = sharedValid && !budgetError && result !== null && result.energyToBattery > 0;
@@ -32,7 +31,7 @@
     : '';
 
   $: if (showResult && result && onResult) {
-    onResult('result', {
+    onResult({
       energyFromGrid: result.energyFromGrid,
       cost: result.actualCost,
       batteryEnd: result.finalBattery,
@@ -44,9 +43,8 @@
   id="budget"
   label={T.budgetLabel}
   bind:value={budget}
-  min={0} step={1000} prefix="Rp"
+  min={0} max={99999999} step={1000} prefix="Rp"
   error={budgetError}
-  on:blur={() => budget = clamp(budget, 0, 99999999)}
 />
 {#if !budgetError && pbjt_rate > 0}
   <p class="text-xs text-slate-400 -mt-1">{T.budgetPbjtInfo}</p>

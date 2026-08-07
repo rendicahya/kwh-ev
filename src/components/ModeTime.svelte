@@ -1,5 +1,4 @@
 <script>
-  import { clamp } from '../lib/validation.js';
   import ProgressBar from './ProgressBar.svelte';
   import { calcTime } from '../lib/calc.js';
   import { EV_PRESETS } from '../lib/constants.js';
@@ -34,7 +33,7 @@
     (result.actualHours === availableHours && result.actualMinutes < availableMinutes));
 
   $: if (showResult && result && onResult) {
-    onResult('result', {
+    onResult({
       energyFromGrid: result.energyFromGrid,
       cost: result.totalCost,
       batteryEnd: result.finalBattery,
@@ -51,7 +50,6 @@
       bind:value={availableHours}
       min={0} max={24} unit={T.jamUnit}
       error={availableHoursError}
-      on:blur={() => availableHours = clamp(availableHours, 0, 24)}
     />
     <NumberInput
       id="availableMinutes"
@@ -59,7 +57,6 @@
       bind:value={availableMinutes}
       min={0} max={59} unit={T.menitUnit}
       error={availableMinutesError}
-      on:blur={() => availableMinutes = clamp(availableMinutes, 0, 59)}
     />
   </div>
   {#if timeError}<p class="text-xs text-red-500 mt-0.5">{timeError}</p>{/if}

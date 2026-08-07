@@ -1,5 +1,5 @@
 <script>
-  import { calcBBMCost, formatRupiah } from '../lib/calc.js';
+  import { calcBBMCost, calcRange, formatRupiah } from '../lib/calc.js';
 
   export let T;
   export let evPreset;
@@ -8,7 +8,7 @@
   export let totalCost;
 
   $: rangeGained = evPreset
-    ? Math.max(0, Math.round(evPreset.range * batteryEnd / 100) - Math.round(evPreset.range * batteryStart / 100))
+    ? Math.max(0, calcRange(evPreset.range, batteryEnd) - calcRange(evPreset.range, batteryStart))
     : null;
   $: bbm = (rangeGained !== null && rangeGained > 0) ? calcBBMCost(rangeGained) : null;
 </script>
